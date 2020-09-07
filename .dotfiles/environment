@@ -1,0 +1,19 @@
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/goworkspace/bin"
+export EDITOR='vim'
+export VISUAL='code'
+
+# AWS
+export AWS_PROFILE=$(cat ~/.aws/profile)
+export AWS_DEFAULT_REGION=eu-west-1
+export AWS_REGION=eu-west-1
+
+# Node
+export NODE_ENV=localhost
+export NPM_TOKEN=`head -n 1 ~/.npmrc | sed 's~//registry.npmjs.org/:_authToken=\(.*\)~\1~'`
+
+# Go
+export GOPATH=$HOME/goworkspace
+export GO111MODULE=on
+
+# Krew
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
