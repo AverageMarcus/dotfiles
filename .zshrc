@@ -10,6 +10,12 @@ then
   which exa > /dev/null || brew install exa
   which kubectl > /dev/null || brew install kubectl
   which tkn > /dev/null || brew install tektoncd/tools/tektoncd-cli
+  which k9s > /dev/null || brew install k9s
+  which helm > /dev/null || brew install helm
+  which go > /dev/null || brew install go
+  which jq > /dev/null || brew install jq
+  which kind > /dev/null || brew install kind
+  which kubectx > /dev/null || brew install kubectx
   brew list --cask homebrew/cask-fonts/font-open-dyslexic-nerd-font > /dev/null || brew install homebrew/cask-fonts/font-open-dyslexic-nerd-font
   which starship > /dev/null || brew install starship
 
