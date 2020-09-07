@@ -1,0 +1,21 @@
+# Aliases
+alias grep='grep --color=auto'
+alias watch='watch '
+alias cat=' bat '
+alias curl='curlie'
+alias tmp='cd $(mktemp -d)'
+alias ls=' exa --group-directories-first --header --git'
+lt() {
+  DEPTH=$(echo $1 | grep "^[0-9]*$")
+
+  if [ "$DEPTH" = "" ]
+  then
+    DEPTH=2
+  else
+    shift
+  fi
+
+  ls --tree -L $DEPTH -I "cache|log|logs|node_modules|vendor" $@
+}
+
+alias aws='docker run --rm -ti -v ~/.aws:/root/.aws -v $(pwd):/aws -e AWS_PROFILE -e AWS_DEFAULT_REGION -e AWS_REGION amazon/aws-cli'
