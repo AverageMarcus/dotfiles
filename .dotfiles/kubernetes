@@ -1,0 +1,167 @@
+alias k='kubectl '
+alias kshell='kubectl run -it shell --image bash --restart Never --rm -- sh'
+
+kiam () {
+  kubectl run -it shell --image docker-tiocoreeng-apps-virtual.bts.artifactory.tio.systems/aws-cli:latest --env=AWS_DEFAULT_REGION=eu-west-1 --overrides="{ \"metadata\": { \"annotations\": { \"iam.amazonaws.com/role\": \"$1\" } } }" --command bash --restart Never --rm
+}
+
+kube-ssh() {
+  sh -c "$(curl -sSL https://raw.githubusercontent.com/AverageMarcus/kube-ssh/master/ssh.sh)"
+}
+
+kube-forward() {
+  if [ -n "$ZSH_VERSION" ]; then
+    setopt LOCAL_OPTIONS NO_NOTIFY NO_MONITOR
+  fi
+  IFS=$'\n'
+  SERVICES=( $(kubectl get service --no-headers -o json | jq '[.items[] | select(.metadata.annotations."kube-forward" != "false")] | (.[] | .metadata.name + "\t" + ([.spec.ports[].port] | join(",")))' -r | column -t) )
+  unset IFS
+
+  TO_KILL=()
+
+  cleanup() {
+    echo "\nClosing connections..."
+    for pid in "${TO_KILL[@]}"
+    do
+      (kill -2 $pid) &> /dev/null
+    done
+
+    trap - INT TERM
+  }
+  trap 'cleanup' INT TERM
+
+  HOST_PORT=9001
+
+  echo "Forwarding..."
+
+  for s in "${SERVICES[@]}"
+  do
+    SERVICE=( $(echo $s) )
+    if [ -n "$ZSH_VERSION" ]; then
+      NAME=${SERVICE[1]}
+      PORT=${SERVICE[2]}
+    else
+      NAME=${SERVICE[0]}
+      PORT=${SERVICE[1]}
+    fi
+    PORTS=($(echo $PORT | tr "," "\n"))
+    for PORT in "${PORTS[@]}"
+    do
+      (kubectl port-forward svc/$NAME $HOST_PORT:$PORT > /dev/null 2>&1) &
+      BG_PID=$!
+
+      if `curl -s -o /dev/null --retry 5 --retry-delay 0 --retry-connrefused -m 3 http://localhost:$HOST_PORT`
+      then
+        echo "\e[1m$NAME:$PORT\e[0m ➡ \e[34mhttp://localhost:$HOST_PORT\e[0m"
+        TO_KILL+=($BG_PID)
+        ((HOST_PORT=HOST_PORT+1))
+      else
+        (kill -2 $BG_PID) &> /dev/null
+      fi
+    done
+  done
+
+  echo "\n\e[2m(Use [Ctl + C] to exit)"
+  cat
+  if [ -n "$BASH_VERSION" ]; then
+    cleanup
+  fi
+}
+
+source <(kubectl completion zsh)
+
+## Merge multiple kubeconfigs
+function join_by { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
+KUBECONFIG="$HOME/.kube/config"
+OTHER_CLUSTERS="$(join_by :$HOME/.kube/clusters/ $(echo $HOME/.kube/clusters/$(ls $HOME/.kube/clusters)))"
+export KUBECONFIG=$KUBECONFIG:$OTHER_CLUSTERS
+
+## Kubectl exec
+kx () {
+	local pod=($(kubectl get pods --all-namespaces -owide | fzf | awk '{print $1, $2}'))
+	local cmd=${@:-"sh"}
+
+	echo kubectl exec -it --namespace $pod[1] $pod[2] $cmd
+	kubectl exec -it --namespace $pod[1] $pod[2] $cmd
+}
+
+## Kubectl logs
+kl () {
+	local pod=($(kubectl get pods --all-namespaces -owide | fzf | awk '{print $1, $2}'))
+	local attr=${@:-""}
+
+	echo kubectl logs -f $attr --namespace $pod[1] $pod[2]
+	kubectl logs -f $attr --namespace $pod[1] $pod[2]
+}
+
+## Display everything
+kall () {
+  kubectl get all --all-namespaces
+}
+
+kctx () {
+  KUBECONFIG="$HOME/.kube/config"
+  OTHER_CLUSTERS="$(join_by :$HOME/.kube/clusters/ $(echo $HOME/.kube/clusters/$(ls $HOME/.kube/clusters)))"
+  export KUBECONFIG=$KUBECONFIG:$OTHER_CLUSTERS
+  kubectx $@
+}
+
+k-version-test() {
+  VERSION=""
+  FILES=""
+  while test $# -gt 0; do
+    case "$1" in
+      -v|--version)
+        shift
+        VERSION=$1
+        shift
+        ;;
+      -f|--files)
+        shift
+        FILES=$1
+        shift
+        ;;
+      -h|--help)
+        echo "k-version-test - test Kubernetes manifest files against different versions of Kubernetes"
+        echo " "
+        echo "k-version-test [options]"
+        echo " "
+        echo "Options:"
+        echo "-h, --help      show this help text"
+        echo "-v, --version   the version of kubernetes to test against"
+        echo "-f, --files     the manifest file(s) to test against"
+        return 0
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  which kind &> /dev/null || (echo "'kind' not installed. Follow install instructions here: https://github.com/kubernetes-sigs/kind/"; return 1)
+
+  if [ ! -z $VERSION ];
+  then
+    TAG=$(curl -s 'https://registry.hub.docker.com/v2/repositories/kindest/node/tags/' | jq '."results" | map(.name | select(startswith("v'$VERSION'"))) | .[0]' | xargs)
+    kind create cluster --image kindest/node:$TAG
+  else
+    kind create cluster
+  fi
+
+  echo
+
+  if kubectl apply --dry-run -f $FILES ; then
+    echo "\n☸️  Kubernetes $VERSION. Result: ✅\n"
+  else
+    echo "\n☸️  Kubernetes $VERSION. Result: ❌\n"
+  fi
+
+  kind delete cluster
+}
+
+
+fix-broken-replicasets() {
+  kubectl get replicasets --all-namespaces -o jsonpath='{range .items[?(@.status.replicas==0)]}--namespace {@.metadata.namespace} {@.metadata.name};{end}'  | tr ";" "\n" | xargs -I {} sh -c "kubectl delete rs {}"
+}
+
+source <(tkn completion zsh)
