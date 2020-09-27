@@ -4,18 +4,15 @@ alias watch='watch '
 alias cat=' bat '
 alias curl='curlie'
 alias tmp='cd $(mktemp -d)'
-alias ls=' exa --group-directories-first --header --git'
+alias ls=' exa --group-directories-first --icons --header --git --ignore-glob=.git'
 lt() {
   DEPTH=$(echo $1 | grep "^[0-9]*$")
-
-  if [ "$DEPTH" = "" ]
-  then
+  if [ "$DEPTH" = "" ]; then
     DEPTH=2
   else
     shift
   fi
-
-  ls --tree -L $DEPTH -I "cache|log|logs|node_modules|vendor" $@
+  ls -l --tree -L $DEPTH -I ".git|cache|log|logs|node_modules|vendor" $@
 }
 
 alias aws='docker run --rm -ti -v ~/.aws:/root/.aws -v $(pwd):/aws -e AWS_PROFILE -e AWS_DEFAULT_REGION -e AWS_REGION amazon/aws-cli'
