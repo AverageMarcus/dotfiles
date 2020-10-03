@@ -31,7 +31,8 @@ dotfiles: ## Installs the dotfiles.
 		f=$$(basename $$file); \
 		ln -sfn $$file $(HOME)/$$f; \
 	done; \
-	mkdir -p $(HOME)/.config
+	mkdir -p $(HOME)/.additional_dotfiles; touch $(HOME)/.additional_dotfiles/credentials; \
+	mkdir -p $(HOME)/.config; \
 	for file in $(shell find $(CURDIR)/.config -type f); do \
 		f=$$(basename $$file); \
 		ln -sfn $$file $(HOME)/.config/$$f; \
