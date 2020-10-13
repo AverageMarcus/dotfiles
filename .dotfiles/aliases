@@ -14,5 +14,3 @@ lt() {
   fi
   ls -l --tree -L $DEPTH -I ".git|cache|log|logs|node_modules|vendor" $@
 }
-
-alias aws='docker run --rm -ti -v ~/.aws:/root/.aws -v $(pwd):/aws -e AWS_PROFILE -e AWS_DEFAULT_REGION -e AWS_REGION amazon/aws-cli'
