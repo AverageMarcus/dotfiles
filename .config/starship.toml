@@ -1,10 +1,29 @@
-prompt_order=["directory","git_branch","git_commit","git_state","git_status","package","golang","nodejs","terraform","memory_usage","aws","kubernetes","cmd_duration","custom","line_break","jobs","battery","time","character"]
+format = """\
+  $directory\
+  $git_branch\
+  $git_commit\
+  $git_state\
+  $git_status\
+  $package\
+  $golang\
+  $nodejs\
+  $terraform\
+  $memory_usage\
+  $aws\
+  $kubernetes\
+  $cmd_duration\
+  $custom\
+  $line_break\
+  $jobs\
+  $battery\
+  $time\
+  $character\
+  """
 
 [character]
-symbol = "✨ "
-error_symbol = "✗ "
+success_symbol = "[✨](yellow)"
+error_symbol = "[✗](red)"
 use_symbol_for_status = true
-style_success = "yellow"
 
 [aws]
 symbol = " "
