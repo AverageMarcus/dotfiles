@@ -73,7 +73,7 @@ source <(kubectl completion zsh)
 ## Merge multiple kubeconfigs
 function join_by { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
 KUBECONFIG="$HOME/.kube/config"
-OTHER_CLUSTERS="$(join_by :$HOME/.kube/clusters/ $(echo $HOME/.kube/clusters/$(ls $HOME/.kube/clusters)))"
+OTHER_CLUSTERS="$(join_by :$HOME/.kube/clusters/ $(echo $HOME/.kube/clusters/$(/bin/ls $HOME/.kube/clusters)))"
 export KUBECONFIG=$KUBECONFIG:$OTHER_CLUSTERS
 
 ## Kubectl exec
