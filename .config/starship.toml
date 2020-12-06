@@ -34,7 +34,6 @@ symbol = " "
 
 [git_commit]
 only_detached = true
-prefix = "(#"
 
 [golang]
 symbol = " "
