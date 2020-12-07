@@ -25,6 +25,26 @@ pre-reqs: ## Install all required binaries.
 	which htop > /dev/null || brew install htop; \
 	which starship > /dev/null || brew install starship
 
+.PHONY: upgrade
+upgrade: ## Upgrade all required binaries.
+	brew list --cask homebrew/cask-fonts/font-open-dyslexic-nerd-font > /dev/null && brew upgrade homebrew/cask-fonts/font-open-dyslexic-nerd-font; \
+	which fzf > /dev/null && brew upgrade fzf; \
+	which bat > /dev/null && brew upgrade bat; \
+	which curlie > /dev/null && brew upgrade rs/tap/curlie; \
+	which exa > /dev/null && brew upgrade exa; \
+	which kubectl > /dev/null && brew upgrade kubectl; \
+	which tkn > /dev/null && brew upgrade tektoncd/tools/tektoncd-cli; \
+	which k9s > /dev/null && brew upgrade k9s; \
+	which helm > /dev/null && brew upgrade helm; \
+	which go > /dev/null && brew upgrade go; \
+	which jq > /dev/null && brew upgrade jq; \
+	which kind > /dev/null && brew upgrade kind; \
+	which kubectx > /dev/null && brew upgrade kubectx; \
+	which tldr > /dev/null && brew upgrade tldr; \
+	which progress > /dev/null && brew upgrade progress; \
+	which htop > /dev/null && brew upgrade htop; \
+	which starship > /dev/null && brew upgrade starship
+
 .PHONY: dotfiles
 dotfiles: ## Installs the dotfiles.
 	for file in $(shell find $(CURDIR) -name ".*" -not -name ".gitignore" -not -name ".git" -not -name ".config" -not -name ".github" -not -name ".*.swp" -not -name ".gnupg"); do \
