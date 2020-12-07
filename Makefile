@@ -47,10 +47,12 @@ upgrade: ## Upgrade all required binaries.
 
 .PHONY: dotfiles
 dotfiles: ## Installs the dotfiles.
+	GITEMAIL=$$(git config --get user.email); \
 	for file in $(shell find $(CURDIR) -name ".*" -not -name ".gitignore" -not -name ".git" -not -name ".config" -not -name ".github" -not -name ".*.swp" -not -name ".gnupg"); do \
 		f=$$(basename $$file); \
 		ln -sfn $$file $(HOME)/$$f; \
 	done; \
+	git config --system --add user.email $$GITEMAIL; \
 	mkdir -p $(HOME)/.additional_dotfiles; touch $(HOME)/.additional_dotfiles/credentials; \
 	mkdir -p $(HOME)/.config; \
 	for file in $(shell find $(CURDIR)/.config -type f); do \
