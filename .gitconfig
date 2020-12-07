@@ -1,6 +1,5 @@
 [user]
 	name = Marcus Noble
-	email = github@marcusnoble.co.uk
 
 [core]
 	editor = /usr/bin/vim
