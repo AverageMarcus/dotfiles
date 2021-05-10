@@ -1,50 +1,70 @@
 format = """\
+  $status\
+  $cmd_duration\
+  $line_break\
   $directory\
   $git_branch\
   $git_commit\
   $git_state\
   $git_status\
-  $package\
+  $aws\
+  $kubernetes\
+  $helm\
   $golang\
   $nodejs\
   $terraform\
-  $memory_usage\
-  $aws\
-  $kubernetes\
-  $cmd_duration\
+  $package\
   $custom\
   $line_break\
   $jobs\
-  $battery\
   $time\
   $character\
   """
 
+command_timeout = 1000
+add_newline = false
+
 [character]
 success_symbol = "[✨](yellow)"
 error_symbol = "[✗](red)"
-use_symbol_for_status = true
 
 [aws]
 symbol = " "
-displayed_items = "profile"
-
-[docker]
-symbol = " "
+format = "[$symbol$profile]($style) "
 
 [git_commit]
 only_detached = true
 
 [golang]
 symbol = " "
+format = "[$symbol$version]($style) "
 
 [kubernetes]
+format = '[$symbol$context \($namespace\)]($style) '
 symbol = "ﴱ "
 style = "bold blue"
 disabled = false
 
 [terraform]
-show_version = true
+format = "[$symbol$version]($style) "
 
 [nodejs]
 symbol = " "
+
+[status]
+style = "red"
+symbol = "✗"
+format = '[↪ \[$symbol $common_meaning$signal_name$maybe_int\]]($style)'
+map_symbol = true
+disabled = false
+
+[helm]
+format = "[$symbol$version]($style) "
+symbol = " "
+
+[cmd_duration]
+format = " took [$duration]($style) "
+
+[package]
+symbol = "📦"
+format = "[$symbol$version]($style) "
