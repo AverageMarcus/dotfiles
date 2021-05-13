@@ -19,3 +19,6 @@ export GO111MODULE=on
 
 # Krew
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+# Starship
+export STARSHIP_LOG=error

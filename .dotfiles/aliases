@@ -15,3 +15,4 @@ lt() {
   ls -l --tree -L $DEPTH -I ".git|cache|log|logs|node_modules|vendor" $@
 }
 alias aws='docker run --rm -ti -v ~/.aws:/root/.aws -v $(pwd):/aws -e AWS_PROFILE -e AWS_DEFAULT_REGION -e AWS_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY amazon/aws-cli'
+alias doggo='docker run --rm -it ghcr.io/mr-karan/doggo:latest'

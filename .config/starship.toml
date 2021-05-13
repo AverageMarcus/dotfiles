@@ -22,7 +22,7 @@ format = """\
   """
 
 command_timeout = 1000
-add_newline = false
+add_newline = true
 
 [character]
 success_symbol = "[✨](yellow)"
