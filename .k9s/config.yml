@@ -1,6 +1,9 @@
 k9s:
   refreshRate: 2
+  maxConnRetry: 5
+  enableMouse: false
   headless: false
+  crumbsless: false
   readOnly: false
   noIcons: false
   logger:
@@ -10,13 +13,12 @@ k9s:
     fullScreenLogs: false
     textWrap: false
     showTime: false
-  currentContext: 
-  currentCluster: 
+  currentContext: default
   clusters:
   thresholds:
     cpu:
       critical: 90
-      warn: 80
+      warn: 85
     memory:
       critical: 90
-      warn: 80
+      warn: 85
