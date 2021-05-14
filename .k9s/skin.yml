@@ -1,66 +1,75 @@
+# Base16 Material - k9s color config
+# Scheme author: Nate Peterson
+# Template author: Jef LeCompte (https://jef.buzz)
 k9s:
+  # General K9s styles
   body:
-    fgColor: "#97979b"
-    bgColor: "#414446"
-    logoColor: "#5af78e"
+    fgColor: '#eeffff'
+    bgColor: '#263238'
+    logoColor: '#89ddff'
+
+  # ClusterInfoView styles
   info:
-    fgColor: white
-    sectionColor: "#5af78e"
+    fgColor: '#c3e88d'
+    sectionColor: '#eeffff'
+
+  # Frame styles
   frame:
+    # Borders styles
     border:
-      fgColor: "#5af78e"
-      focusColor: "#5af78e"
+      fgColor: '#82aaff'
+      focusColor: '#89ddff'
+
+    # MenuView attributes and styles
     menu:
-      fgColor: white
-      keyColor: "#57c7ff"
-      numKeyColor: "#ff6ac1"
+      fgColor: '#eeffff'
+      keyColor: '#c3e88d'
+      # Used for favorite namespaces
+      numKeyColor: '#c3e88d'
+
+    # CrumbView attributes for history navigation.
     crumbs:
-      fgColor: "#414446"
-      bgColor: white
-      activeColor: "#f3f99d"
+      fgColor: '#89ddff'
+      bgColor: '#263238'
+      activeColor: '#263238'
+
+    # Resource status and update styles
     status:
-      newColor: "#eff0eb"
-      modifyColor: "#5af78e"
-      addColor: "#57c7ff"
-      errorColor: "#ff5c57"
-      highlightcolor: "#f3f99d"
-      killColor: mediumpurple
-      completedColor: gray
+      newColor: '#eeffff'
+      modifyColor: '#ffcb6b'
+      addColor: '#c3e88d'
+      errorColor: '#f07178'
+      highlightcolor: '#89ddff'
+      killColor: '#f07178'
+      completedColor: '#c3e88d'
+
+    # Border title styles.
     title:
-      fgColor: "#5af78e"
-      bgColor: "#414446"
-      highlightColor: white
-      counterColor: white
-      filterColor: "#57c7ff"
+      fgColor: '#eeffff'
+      bgColor: '#263238'
+      highlightColor: '#c792ea'
+      counterColor: '#c792ea'
+      filterColor: '#c792ea'
+  # Specific views styles
   views:
-    # Charts skins...
-    charts:
-      bgColor: default
-      defaultDialColors:
-        - "#57c7ff"
-        - "#ff5c57"
-      defaultChartColors:
-        - "#57c7ff"
-        - "#ff5c57"
+    # TableView attributes.
     table:
-      fgColor: "#57c7ff"
-      bgColor: "#414446"
-      cursorColor: "#5af78e"
-      markColor: darkgoldenrod
+      fgColor: '#82aaff'
+      bgColor: '#263238'
+      cursorColor: '#89ddff'
+      # Header row styles.
       header:
-        fgColor: white
-        bgColor: "#414446"
-        sorterColor: orange
-    xray:
-      fgColor: "#57c7ff"
-      bgColor: "#414446"
-      cursorColor: "#5af78e"
-      graphicColor: darkgoldenrod
-      showIcons: false
+        fgColor: '#82aaff'
+        bgColor: '#263238'
+        sorterColor: '#c792ea'
+
+    # YAML info styles.
     yaml:
-      keyColor: "#ff5c57"
-      colonColor: white
-      valueColor: "#f3f99d"
+      keyColor: '#f07178'
+      colonColor: '#89ddff'
+      valueColor: '#eeffff'
+
+    # Logs styles.
     logs:
-      fgColor: white
-      bgColor: "#414446"
+      fgColor: '#eeffff'
+      bgColor: '#263238'
