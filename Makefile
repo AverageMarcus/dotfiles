@@ -48,7 +48,7 @@ upgrade: ## Upgrade all required binaries.
 .PHONY: dotfiles
 dotfiles: ## Installs the dotfiles.
 	GITEMAIL=$$(git config --get user.email); \
-	for file in $(shell find $(CURDIR) -name ".*" -not -name ".gitignore" -not -name ".git" -not -name ".config" -not -name ".github" -not -name ".*.swp" -not -name ".gnupg"); do \
+	for file in $(shell find $(CURDIR) -name ".*" -not -name ".gitignore" -not -name ".git" -not -name ".config" -not -name ".k9s" -not -name ".github" -not -name ".*.swp" -not -name ".gnupg"); do \
 		f=$$(basename $$file); \
 		ln -sfn $$file $(HOME)/$$f; \
 	done; \
@@ -58,7 +58,12 @@ dotfiles: ## Installs the dotfiles.
 	for file in $(shell find $(CURDIR)/.config -type f); do \
 		f=$$(basename $$file); \
 		ln -sfn $$file $(HOME)/.config/$$f; \
-	done;
+	done; \
+	mkdir -p $(HOME)/.k9s; \
+	for file in $(shell find $(CURDIR)/.k9s -type f); do \
+		f=$$(basename $$file); \
+		ln -sfn $$file $(HOME)/.k9s/$$f; \
+	done; \
 
 .PHONY: help
 help:
