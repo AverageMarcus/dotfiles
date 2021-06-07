@@ -21,7 +21,7 @@
 	basename = "!git remote -v | head -n1 | awk '{print $2}' | sed 's/.*\\///' | sed 's/\\.git//'"
 	org-name = "!git remote -v | grep -m 1 -o ':.*/' | sed 's:^.\\(.*\\).$:\\1:'"
 	branch-name = "!git rev-parse --abbrev-ref HEAD"
-	changelog-changed = "!test $(git diff --name-only HEAD origin/master | grep CHANGELOG.md | wc -l | xargs) = 1"
+	changelog-changed = "!test $(git diff --name-only HEAD origin/$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@') | grep CHANGELOG.md | wc -l | xargs) = 1"
 
 	main = "!git remote set-head origin --auto && git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@') && git pull"
 	publish = "!func(){ if [[ $(git branch-name) != \"$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')\" ]]; then git push -u origin $(git branch-name) && (git changelog-changed || echo '\n\n⚠️  Dont forget to update changelog ⚠️ ') ; else echo "Wat?!"; fi; }; func"
@@ -41,3 +41,5 @@
 
 [url "ssh://git@github.com"]
 	insteadOf = https://github.com
+[url "ssh://git@gitlab.et-scm.com/"]
+	insteadOf = https://gitlab.et-scm.com
