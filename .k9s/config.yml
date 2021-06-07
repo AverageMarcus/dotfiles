@@ -13,8 +13,80 @@ k9s:
     fullScreenLogs: false
     textWrap: false
     showTime: false
-  currentContext: default
+  currentContext: core-elsevier-platform
+  currentCluster: arn:aws:eks:eu-west-1:183742092277:cluster/core-elsevier-platform
   clusters:
+    arn:aws:eks:eu-west-1:116634825266:cluster/ce-automation:
+      namespace:
+        active: twistlock-operator-system
+        favorites:
+        - twistlock-operator-system
+        - kube-system
+        - default
+      view:
+        active: sc
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.31
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+      portForwardAddress: localhost
+    arn:aws:eks:eu-west-1:183742092277:cluster/core-elsevier-platform:
+      namespace:
+        active: platform-manager
+        favorites:
+        - platform-manager
+        - all
+        - default
+      view:
+        active: dp default
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.31
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+      portForwardAddress: localhost
+    arn:aws:eks:eu-west-1:702267635140:cluster/ce-prod:
+      namespace:
+        active: default
+        favorites:
+        - all
+        - twistlock-operator-system
+        - default
+      view:
+        active: cj
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.31
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+      portForwardAddress: localhost
+    arn:aws:eks:eu-west-1:781632261136:cluster/test-cluster:
+      namespace:
+        active: ""
+        favorites:
+        - all
+        - default
+      view:
+        active: po
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.31
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+      portForwardAddress: localhost
   thresholds:
     cpu:
       critical: 90
