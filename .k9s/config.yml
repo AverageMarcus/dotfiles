@@ -13,18 +13,24 @@ k9s:
     fullScreenLogs: false
     textWrap: false
     showTime: false
-  currentContext: core-elsevier-platform
-  currentCluster: arn:aws:eks:eu-west-1:183742092277:cluster/core-elsevier-platform
+  currentContext: admin@clusterfun-scaleway
+  currentCluster: clusterfun-scaleway
   clusters:
-    arn:aws:eks:eu-west-1:116634825266:cluster/ce-automation:
+    clusterfun-scaleway:
       namespace:
-        active: twistlock-operator-system
+        active: nextcloud
         favorites:
-        - twistlock-operator-system
+        - cv
+        - logging
+        - node-red
+        - gitea
+        - all
         - kube-system
+        - nextcloud
+        - chat
         - default
       view:
-        active: sc
+        active: pod
       featureGates:
         nodeShell: false
       shellPod:
@@ -34,50 +40,18 @@ k9s:
           cpu: 100m
           memory: 100Mi
       portForwardAddress: localhost
-    arn:aws:eks:eu-west-1:183742092277:cluster/core-elsevier-platform:
-      namespace:
-        active: platform-manager
-        favorites:
-        - platform-manager
-        - all
-        - default
-      view:
-        active: dp default
-      featureGates:
-        nodeShell: false
-      shellPod:
-        image: busybox:1.31
-        namespace: default
-        limits:
-          cpu: 100m
-          memory: 100Mi
-      portForwardAddress: localhost
-    arn:aws:eks:eu-west-1:702267635140:cluster/ce-prod:
-      namespace:
-        active: default
-        favorites:
-        - all
-        - twistlock-operator-system
-        - default
-      view:
-        active: cj
-      featureGates:
-        nodeShell: false
-      shellPod:
-        image: busybox:1.31
-        namespace: default
-        limits:
-          cpu: 100m
-          memory: 100Mi
-      portForwardAddress: localhost
-    arn:aws:eks:eu-west-1:781632261136:cluster/test-cluster:
+    microk8s-cluster:
       namespace:
         active: ""
         favorites:
+        - ingress
+        - kube-system
+        - argocd
+        - logging
         - all
         - default
       view:
-        active: po
+        active: pod
       featureGates:
         nodeShell: false
       shellPod:
@@ -90,7 +64,7 @@ k9s:
   thresholds:
     cpu:
       critical: 90
-      warn: 85
+      warn: 70
     memory:
       critical: 90
-      warn: 85
+      warn: 70
