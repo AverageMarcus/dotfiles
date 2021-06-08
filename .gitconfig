@@ -8,6 +8,9 @@
 [push]
 	default = simple
 
+[init]
+	defaultBranch = main
+
 [credential]
 	helper = store
 
