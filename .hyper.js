@@ -8,7 +8,7 @@ module.exports = {
     // or `'canary'` for less polished but more frequent updates
     updateChannel: 'stable',
 
-    scrollback: 100000,
+    scrollback: 10000000,
 
     // default font size in pixels for all tabs
     fontSize: 13,
