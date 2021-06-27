@@ -8,6 +8,7 @@ pre-reqs: ## Install all required binaries.
 	which brew > /dev/null || bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"; \
 	[ -d ~/.oh-my-zsh ] || sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; \
 	brew list --cask homebrew/cask-fonts/font-open-dyslexic-nerd-font > /dev/null || brew install homebrew/cask-fonts/font-open-dyslexic-nerd-font; \
+	brew list rust > /dev/null || brew install rust; \
 	which fzf > /dev/null || brew install fzf; \
 	which bat > /dev/null || brew install bat; \
 	which curlie > /dev/null || brew install rs/tap/curlie; \
@@ -23,11 +24,22 @@ pre-reqs: ## Install all required binaries.
 	which tldr > /dev/null || brew install tldr; \
 	which progress > /dev/null || brew install progress; \
 	which htop > /dev/null || brew install htop; \
-	which starship > /dev/null || brew install starship
+	which starship > /dev/null || brew install starship; \
+	which macchina > /dev/null || cargo install macchina; \
+	which rg > /dev/null || brew install ripgrep; \
+	which delta > /dev/null || brew install git-delta; \
+	which dust > /dev/null || brew install dust; \
+	which duf > /dev/null || brew install duf; \
+	which fd > /dev/null || brew install fd; \
+	which bandwhich > /dev/null || brew install bandwhich; \
+	which btm > /dev/null || cargo install bottom; \
+	which procs > /dev/null || brew install procs; \
+	which dog > /dev/null || brew install dog
 
 .PHONY: upgrade
 upgrade: ## Upgrade all required binaries.
 	brew list --cask homebrew/cask-fonts/font-open-dyslexic-nerd-font > /dev/null && brew upgrade homebrew/cask-fonts/font-open-dyslexic-nerd-font; \
+	brew list rust > /dev/null || brew upgrade rust; \
 	which fzf > /dev/null && brew upgrade fzf; \
 	which bat > /dev/null && brew upgrade bat; \
 	which curlie > /dev/null && brew upgrade rs/tap/curlie; \
@@ -43,7 +55,17 @@ upgrade: ## Upgrade all required binaries.
 	which tldr > /dev/null && brew upgrade tldr; \
 	which progress > /dev/null && brew upgrade progress; \
 	which htop > /dev/null && brew upgrade htop; \
-	which starship > /dev/null && brew upgrade starship
+	which starship > /dev/null && brew upgrade starship; \
+	which macchina > /dev/null && cargo install macchina; \
+	which rg > /dev/null && brew upgrade ripgrep; \
+	which delta > /dev/null && brew upgrade git-delta; \
+	which dust > /dev/null && brew upgrade dust; \
+	which duf > /dev/null && brew upgrade duf; \
+	which fd > /dev/null && brew upgrade fd; \
+	which bandwhich > /dev/null && brew upgrade bandwhich; \
+	which btm > /dev/null && cargo install bottom; \
+	which procs > /dev/null && brew upgrade procs; \
+	which dog > /dev/null && brew upgrade dog
 
 .PHONY: dotfiles
 dotfiles: ## Installs the dotfiles.

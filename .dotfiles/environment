@@ -1,4 +1,4 @@
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/goworkspace/bin"
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/goworkspace/bin:$HOME/.cargo/bin"
 export EDITOR='vim'
 export VISUAL='code'
 

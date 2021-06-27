@@ -13,24 +13,24 @@ k9s:
     fullScreenLogs: false
     textWrap: false
     showTime: false
-  currentContext: admin@clusterfun-scaleway
-  currentCluster: clusterfun-scaleway
+  currentContext: microk8s
+  currentCluster: microk8s-cluster
   clusters:
     clusterfun-scaleway:
       namespace:
-        active: nextcloud
+        active: git-sync
         favorites:
-        - cv
-        - logging
-        - node-red
-        - gitea
         - all
+        - git-sync
         - kube-system
-        - nextcloud
-        - chat
-        - default
+        - opengraph
+        - workadventure
+        - blog
+        - monitoring
+        - inlets
+        - dashboard
       view:
-        active: pod
+        active: po
       featureGates:
         nodeShell: false
       shellPod:
@@ -44,14 +44,14 @@ k9s:
       namespace:
         active: ""
         favorites:
+        - monitoring
         - ingress
         - kube-system
         - argocd
-        - logging
         - all
         - default
       view:
-        active: pod
+        active: po
       featureGates:
         nodeShell: false
       shellPod:
