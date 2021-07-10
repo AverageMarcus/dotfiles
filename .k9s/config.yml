@@ -3,68 +3,24 @@ k9s:
   maxConnRetry: 5
   enableMouse: false
   headless: false
+  logoless: true
   crumbsless: false
   readOnly: false
   noIcons: false
   logger:
-    tail: 100
+    tail: 1000
     buffer: 5000
     sinceSeconds: -1
     fullScreenLogs: false
     textWrap: false
     showTime: false
-  currentContext: microk8s
-  currentCluster: microk8s-cluster
-  clusters:
-    clusterfun-scaleway:
-      namespace:
-        active: git-sync
-        favorites:
-        - all
-        - git-sync
-        - kube-system
-        - opengraph
-        - workadventure
-        - blog
-        - monitoring
-        - inlets
-        - dashboard
-      view:
-        active: po
-      featureGates:
-        nodeShell: false
-      shellPod:
-        image: busybox:1.31
-        namespace: default
-        limits:
-          cpu: 100m
-          memory: 100Mi
-      portForwardAddress: localhost
-    microk8s-cluster:
-      namespace:
-        active: ""
-        favorites:
-        - monitoring
-        - ingress
-        - kube-system
-        - argocd
-        - all
-        - default
-      view:
-        active: po
-      featureGates:
-        nodeShell: false
-      shellPod:
-        image: busybox:1.31
-        namespace: default
-        limits:
-          cpu: 100m
-          memory: 100Mi
-      portForwardAddress: localhost
+  currentContext:
+  currentCluster:
+  clusters: []
   thresholds:
     cpu:
       critical: 90
-      warn: 70
+      warn: 80
     memory:
       critical: 90
-      warn: 70
+      warn: 80

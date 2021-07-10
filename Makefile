@@ -9,6 +9,7 @@ pre-reqs: ## Install all required binaries.
 	[ -d ~/.oh-my-zsh ] || sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; \
 	brew list --cask homebrew/cask-fonts/font-open-dyslexic-nerd-font > /dev/null || brew install homebrew/cask-fonts/font-open-dyslexic-nerd-font; \
 	brew list rust > /dev/null || brew install rust; \
+	which rustup > /dev/null || curl https://sh.rustup.rs -sSf | sh -s -- -y --no-modify-path; \
 	which fzf > /dev/null || brew install fzf; \
 	which bat > /dev/null || brew install bat; \
 	which curlie > /dev/null || brew install rs/tap/curlie; \
@@ -40,6 +41,7 @@ pre-reqs: ## Install all required binaries.
 upgrade: ## Upgrade all required binaries.
 	brew list --cask homebrew/cask-fonts/font-open-dyslexic-nerd-font > /dev/null && brew upgrade homebrew/cask-fonts/font-open-dyslexic-nerd-font; \
 	brew list rust > /dev/null || brew upgrade rust; \
+	which rustup > /dev/null || rustup update; \
 	which fzf > /dev/null && brew upgrade fzf; \
 	which bat > /dev/null && brew upgrade bat; \
 	which curlie > /dev/null && brew upgrade rs/tap/curlie; \
