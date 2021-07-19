@@ -35,7 +35,9 @@ pre-reqs: ## Install all required binaries.
 	which bandwhich > /dev/null || brew install bandwhich; \
 	which btm > /dev/null || cargo install bottom; \
 	which procs > /dev/null || brew install procs; \
-	which dog > /dev/null || brew install dog
+	which dog > /dev/null || brew install dog; \
+	git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions; \
+	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting;
 
 .PHONY: upgrade
 upgrade: ## Upgrade all required binaries.
@@ -67,7 +69,9 @@ upgrade: ## Upgrade all required binaries.
 	which bandwhich > /dev/null && brew upgrade bandwhich; \
 	which btm > /dev/null && cargo install bottom; \
 	which procs > /dev/null && brew upgrade procs; \
-	which dog > /dev/null && brew upgrade dog
+	which dog > /dev/null && brew upgrade dog; \
+	cd ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && git pull && cd -; \
+	cd ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && git pull && cd -;
 
 .PHONY: dotfiles
 dotfiles: ## Installs the dotfiles.
