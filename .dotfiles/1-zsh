@@ -10,6 +10,7 @@ autoload -U compinit && compinit
 fpath=($fpath ~/.zsh/completion)
 
 DISABLE_UNTRACKED_FILES_DIRTY="true"
+SHOW_AWS_PROMPT=false
 
 source $ZSH/oh-my-zsh.sh
 
