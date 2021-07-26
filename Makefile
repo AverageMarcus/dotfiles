@@ -81,7 +81,8 @@ upgrade: ## Upgrade all required binaries.
 	which asdf > /dev/null && brew upgrade asdf; \
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && git pull && cd -; \
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && git pull && cd -; \
-	asdf plugin update --all;
+	asdf plugin update --all; \
+	cd ~/.oh-my-zsh && git pull && cd -;
 
 .PHONY: dotfiles
 dotfiles: ## Installs the dotfiles.
