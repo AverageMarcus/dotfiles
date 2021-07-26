@@ -82,7 +82,8 @@ upgrade: ## Upgrade all required binaries.
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && git pull && cd -; \
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && git pull && cd -; \
 	asdf plugin update --all; \
-	cd ~/.oh-my-zsh && git pull && cd -;
+	cd ~/.oh-my-zsh && git pull && cd -; \
+	npm install -g git-split-diffs;
 
 .PHONY: dotfiles
 dotfiles: ## Installs the dotfiles.
