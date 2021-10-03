@@ -36,16 +36,10 @@ pre-reqs: ## Install all required binaries.
 	which btm > /dev/null || cargo install bottom; \
 	which procs > /dev/null || brew install procs; \
 	which dog > /dev/null || brew install dog; \
-	which asdf > /dev/null || brew install asdf; \
 	brew install gpg gawk coreutils; \
 	git clone https://github.com/zsh-users/zsh-autosuggestions $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions; \
 	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting; \
-	asdf plugin add nodejs; \
-	asdf plugin add ruby; \
-	asdf plugin-add kubectl https://github.com/asdf-community/asdf-kubectl.git; \
-	RUST_WITHOUT=rust-docs asdf plugin-add rust https://github.com/asdf-community/asdf-rust.git; \
-	asdf plugin-add golang https://github.com/kennyp/asdf-golang.git; \
-	asdf install 1> /dev/null;
+	RUST_WITHOUT=rust-docs asdf plugin-add rust https://github.com/asdf-community/asdf-rust.git;
 
 .PHONY: upgrade
 upgrade: ## Upgrade all required binaries.
@@ -78,10 +72,8 @@ upgrade: ## Upgrade all required binaries.
 	which btm > /dev/null && cargo install bottom; \
 	which procs > /dev/null && brew upgrade procs; \
 	which dog > /dev/null && brew upgrade dog; \
-	which asdf > /dev/null && brew upgrade asdf; \
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && git pull && cd -; \
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && git pull && cd -; \
-	asdf plugin update --all; \
 	cd ~/.oh-my-zsh && git pull && cd -; \
 	npm install -g git-split-diffs;
 
