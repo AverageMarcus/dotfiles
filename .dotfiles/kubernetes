@@ -1,4 +1,5 @@
 alias k='kubectl '
+alias kgs='kubectl-gs '
 alias kshell='kubectl run -it shell --image bash --restart Never --rm -- sh'
 
 kiam () {
@@ -70,12 +71,6 @@ kube-forward() {
 
 source <(kubectl completion zsh)
 
-## Merge multiple kubeconfigs
-function join_by { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
-KUBECONFIG="$HOME/.kube/config"
-OTHER_CLUSTERS="$(join_by :$HOME/.kube/clusters/ $(echo $HOME/.kube/clusters/$(/bin/ls $HOME/.kube/clusters)))"
-export KUBECONFIG=$KUBECONFIG:$OTHER_CLUSTERS
-
 ## Kubectl exec
 kx () {
 	local pod=($(kubectl get pods --all-namespaces -owide | fzf | awk '{print $1, $2}'))
@@ -97,13 +92,6 @@ kl () {
 ## Display everything
 kall () {
   kubectl get all --all-namespaces
-}
-
-kctx () {
-  KUBECONFIG="$HOME/.kube/config"
-  OTHER_CLUSTERS="$(join_by :$HOME/.kube/clusters/ $(echo $HOME/.kube/clusters/$(ls $HOME/.kube/clusters)))"
-  export KUBECONFIG=$KUBECONFIG:$OTHER_CLUSTERS
-  kubectx $@
 }
 
 k-version-test() {

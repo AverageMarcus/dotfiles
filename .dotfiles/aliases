@@ -24,6 +24,8 @@ alias bandwhich='sudo bandwhich'
 alias top='btm'
 alias ps='procs'
 alias dig='dog'
+alias kubectx='switch'
+alias kctx='switch'
 
 alias machine-info='macchina -t Boron --bar'
 alias watch='watch '
@@ -39,7 +41,11 @@ lt() {
 }
 alias aws='docker run --rm -ti -v ~/.aws:/root/.aws -v $(pwd):/aws -e AWS_PROFILE -e AWS_DEFAULT_REGION -e AWS_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY amazon/aws-cli'
 
-git-clone() {
-  git clone $1
-  cd "$(basename "$1" .git)"
+git() {
+  if [ "$1" = "take" ]; then
+    /usr/local/bin/git clone $2
+    cd $(basename $2 | sed 's/\.git$//')
+  else
+    /usr/local/bin/git $@
+  fi
 }

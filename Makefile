@@ -37,6 +37,7 @@ pre-reqs: ## Install all required binaries.
 	which procs > /dev/null || brew install procs; \
 	which dog > /dev/null || brew install dog; \
 	which asdf > /dev/null || brew install asdf; \
+	which switcher > /dev/null || brew install danielfoehrkn/switch/switch; \
 	brew install gpg gawk coreutils; \
 	git clone https://github.com/zsh-users/zsh-autosuggestions $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions; \
 	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting; \
@@ -79,6 +80,7 @@ upgrade: ## Upgrade all required binaries.
 	which procs > /dev/null && brew upgrade procs; \
 	which dog > /dev/null && brew upgrade dog; \
 	which asdf > /dev/null && brew upgrade asdf; \
+	which switcher > /dev/null && brew upgrade switch; \
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && git pull && cd -; \
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && git pull && cd -; \
 	asdf plugin update --all; \
@@ -104,6 +106,12 @@ dotfiles: ## Installs the dotfiles.
 		f=$$(basename $$file); \
 		ln -sfn $$file $(HOME)/.k9s/$$f; \
 	done; \
+	mkdir -p $(HOME)/.kube; \
+	for file in $(shell find $(CURDIR)/.kube -type f); do \
+		f=$$(basename $$file); \
+		ln -sfn $$file $(HOME)/.kube/$$f; \
+	done; \
+
 
 .PHONY: help
 help:

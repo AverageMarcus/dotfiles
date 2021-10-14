@@ -1,6 +1,7 @@
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/goworkspace/bin:$HOME/.cargo/bin:/usr/local/kubebuilder/bin:$HOME/.asdf/shims"
 export EDITOR='vim'
 export VISUAL='code'
+export GPG_TTY=$(tty)
 
 # AWS
 if [ -f ~/.aws/profile ]; then

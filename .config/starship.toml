@@ -7,7 +7,6 @@ format = """\
   $git_commit\
   $git_state\
   $git_status\
-  $aws\
   $kubernetes\
   $helm\
   $golang\
@@ -44,6 +43,8 @@ format = '[$symbol$context \($namespace\)]($style) '
 symbol = "ﴱ "
 style = "bold blue"
 disabled = false
+[kubernetes.context_aliases]
+"gs-(?P<cluster>.+)" = "$cluster [MC]"
 
 [terraform]
 format = "[$symbol$version]($style) "

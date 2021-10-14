@@ -1,5 +1,9 @@
 [user]
 	name = Marcus Noble
+	signingkey = B8F2DB8A7AEBAF78
+
+[commit]
+	gpgsign = true
 
 [core]
 	editor = /usr/bin/vim
@@ -26,8 +30,9 @@
 	org-name = "!git remote -v | grep -m 1 -o ':.*/' | sed 's:^.\\(.*\\).$:\\1:'"
 	branch-name = "!git rev-parse --abbrev-ref HEAD"
 	changelog-changed = "!test $(git diff --name-only HEAD origin/$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@') | grep CHANGELOG.md | wc -l | xargs) = 1"
+	main-branch = "!git remote show origin|grep HEAD|sed 's/.* //'"
 
-	main = "!git remote set-head origin --auto && git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@') && git pull"
+	main = "!git remote set-head origin --auto && git checkout $(git main-branch) && git pull"
 	publish = "!func(){ if [[ $(git branch-name) != \"$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')\" ]]; then git push -u origin $(git branch-name) && (git changelog-changed || echo '\n\n⚠️  Dont forget to update changelog ⚠️ ') ; else echo "Wat?!"; fi; }; func"
 	cleanup = "!git fetch -p && for branch in `git branch -vv | grep ': gone]' | awk '{print $1}'`; do git branch -D $branch; done"
 	dont-change-file = "!git update-index --assume-unchanged"
@@ -45,5 +50,3 @@
 
 [url "ssh://git@github.com"]
 	insteadOf = https://github.com
-[url "ssh://git@gitlab.et-scm.com/"]
-	insteadOf = https://gitlab.et-scm.com
