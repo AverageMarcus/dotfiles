@@ -45,6 +45,9 @@ git() {
   if [ "$1" = "take" ]; then
     /usr/local/bin/git clone $2
     cd $(basename $2 | sed 's/\.git$//')
+  elif [ "$1" = "commit" ]; then
+    shift
+    /usr/local/bin/git commit -s $@
   else
     /usr/local/bin/git $@
   fi
