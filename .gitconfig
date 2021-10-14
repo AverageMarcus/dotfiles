@@ -8,8 +8,16 @@
 [core]
 	editor = /usr/bin/vim
 	excludesfile = ~/.gitignore
-	pager = git-split-diffs --color | less -RFX
 
+[pager]
+	diff = delta
+	log = delta
+	reflog = delta
+	show = delta
+
+[delta]
+	line-numbers = true
+	side-by-side = true
 [push]
 	default = simple
 

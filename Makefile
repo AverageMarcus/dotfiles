@@ -36,6 +36,7 @@ pre-reqs: ## Install all required binaries.
 	which btm > /dev/null || cargo install bottom; \
 	which procs > /dev/null || brew install procs; \
 	which dog > /dev/null || brew install dog; \
+	which delta > /dev/null || brew install git-delta; \
 	which switcher > /dev/null || brew install danielfoehrkn/switch/switch; \
 	brew install gpg gawk coreutils; \
 	git clone https://github.com/zsh-users/zsh-autosuggestions $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions; \
@@ -73,6 +74,7 @@ upgrade: ## Upgrade all required binaries.
 	which btm > /dev/null && cargo install bottom; \
 	which procs > /dev/null && brew upgrade procs; \
 	which dog > /dev/null && brew upgrade dog; \
+	which delta > /dev/null && brew upgrade git-delta; \
 	which switcher > /dev/null && brew upgrade switch; \
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && git pull && cd -; \
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && git pull && cd -; \
