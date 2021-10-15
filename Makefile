@@ -38,6 +38,7 @@ pre-reqs: ## Install all required binaries.
 	which dog > /dev/null || brew install dog; \
 	which delta > /dev/null || brew install git-delta; \
 	which switcher > /dev/null || brew install danielfoehrkn/switch/switch; \
+	which pinentry-mac > dev/null || brew install pinentry-mac; \
 	brew install gpg gawk coreutils; \
 	git clone https://github.com/zsh-users/zsh-autosuggestions $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions; \
 	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting; \
@@ -76,6 +77,7 @@ upgrade: ## Upgrade all required binaries.
 	which dog > /dev/null && brew upgrade dog; \
 	which delta > /dev/null && brew upgrade git-delta; \
 	which switcher > /dev/null && brew upgrade switch; \
+	which pinentry-mac > dev/null && brew upgrade pinentry-mac; \
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && git pull && cd -; \
 	cd $${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && git pull && cd -; \
 	cd ~/.oh-my-zsh && git pull && cd -; \
@@ -104,6 +106,11 @@ dotfiles: ## Installs the dotfiles.
 	for file in $(shell find $(CURDIR)/.kube -type f); do \
 		f=$$(basename $$file); \
 		ln -sfn $$file $(HOME)/.kube/$$f; \
+	done; \
+	mkdir -p $(HOME)/.gnupg; \
+	for file in $(shell find $(CURDIR)/.gnupg -type f); do \
+		f=$$(basename $$file); \
+		ln -sfn $$file $(HOME)/.gnupg/$$f; \
 	done; \
 
 
