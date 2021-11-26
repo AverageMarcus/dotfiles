@@ -1,10 +1,5 @@
 alias k='kubectl '
-alias kgs='kubectl-gs '
 alias kshell='kubectl run -it shell --image bash --restart Never --rm -- sh'
-
-kiam () {
-  kubectl run -it shell --image docker-tiocoreeng-apps-virtual.bts.artifactory.tio.systems/aws-cli:latest --env=AWS_DEFAULT_REGION=eu-west-1 --overrides="{ \"metadata\": { \"annotations\": { \"iam.amazonaws.com/role\": \"$1\" } } }" --command bash --restart Never --rm
-}
 
 kube-ssh() {
   sh -c "$(curl -sSL https://raw.githubusercontent.com/AverageMarcus/kube-ssh/master/ssh.sh)"
@@ -90,8 +85,56 @@ kl () {
 }
 
 ## Display everything
-kall () {
-  kubectl get all --all-namespaces
+kall() {
+  NAMESPACE=""
+  LABEL=""
+  ALL_NAMESPACES=false
+  while test $# -gt 0; do
+    case "$1" in
+      -n|--namespace)
+        shift
+        NAMESPACE=$1
+        shift
+        ;;
+      -l|--selector)
+        shift
+        LABEL=$1
+        shift
+        ;;
+      -A|--all-namespaces)
+        ALL_NAMESPACES=true
+        shift
+        ;;
+      -h|--help)
+        echo "kall - get all Kubernetes resources matching a given label selector"
+        echo " "
+        echo "kall [options]"
+        echo " "
+        echo "Options:"
+        echo "-h, --help            show this help text"
+        echo "-n, --namespace       the namespace to check against"
+        echo "-l, --selector        the label selector to match on"
+        echo "-A, --all-namespaces  search all namespaces"
+        return 0
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  if [[ "${LABEL}" == "" ]]; then
+    echo "Please provide a label selector to match on"
+    return 1
+  fi
+
+  NAMES="$(kubectl api-resources --namespaced --verbs list -o name | tr '\n' ,)"
+
+  if [ $ALL_NAMESPACES ]; then
+    kubectl get "${NAMES:0:-1}" --show-kind --ignore-not-found -l ${LABEL} -A
+  else
+    kubectl get "${NAMES:0:-1}" --show-kind --ignore-not-found -l ${LABEL} -n ${NAMESPACE}
+  fi
 }
 
 k-version-test() {
