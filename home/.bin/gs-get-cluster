@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -e
+
+NAMESPACE="org-giantswarm"
+
+print_usage() {
+  echo "gs-get-cluster - get a Giant Swarm managed workload cluster"
+  echo " "
+  echo "gs-get-cluster [cluster-name]"
+  echo " "
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace the cluster is in (default: org-giantswarm)"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+kubectl-gs get cluster --namespace $NAMESPACE $@ 2>/dev/null || kubectl get cl --namespace $NAMESPACE $@

@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+set -e
+
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+POD=""
+CMD="sh"
+
+print_usage() {
+  echo "kube-exec - execute commands within a pod"
+  echo " "
+  echo "kube-exec [options]"
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace the pod is in"
+  echo "-p, --pod             the name of the pod"
+  echo "-c, --command         the command to run in the pod (default: sh)"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE=$1
+      shift
+      ;;
+    -p|--pod)
+      shift
+      POD=$1
+      shift
+      ;;
+    -c|--command)
+      shift
+      CMD=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [[ "$POD" == "" ]]; then
+  which fzf &>/dev/null || (
+    echo "If no pod provided, fzf is required to select pods"
+    echo ""
+    print_usage
+    exit 1
+  )
+
+  pod=($(kubectl get pods --all-namespaces -owide | fzf | awk '{print $1, $2}'))
+  POD=$pod[1]
+  NAMESPACE=$pod[0]
+fi
+
+echo kubectl exec -it --namespace $NAMESPACE $POD $CMD
+kubectl exec -it --namespace $NAMESPACE $POD $CMD

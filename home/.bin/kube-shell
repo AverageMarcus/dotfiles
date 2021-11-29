@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+set -e
+
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+POD="shell"
+IMAGE="bash"
+CMD="sh"
+
+print_usage() {
+  echo "kube-shell - create a new pod and exec into it's shell"
+  echo " "
+  echo "kube-shell [options]"
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace the pod should launch in"
+  echo "-p, --pod             the name of the pod to get logs for (default: shell)"
+  echo "-i, --image           the image to use for the shell container (default: bash)"
+  echo "-c, --command         the initial command to execute in the container (default: sh)"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE=$1
+      shift
+      ;;
+    -p|--pod)
+      shift
+      POD=$1
+      shift
+      ;;
+    -i|--image)
+      shift
+      IMAGE=$1
+      shift
+      ;;
+    -c|--command)
+      shift
+      CMD=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+
+echo kubectl run -it --namespace $NAMESPACE $POD --image $IMAGE --restart Never --rm -- $CMD
+kubectl run -it --namespace $NAMESPACE $POD --image $IMAGE --restart Never --rm -- $CMD

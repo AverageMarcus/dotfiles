@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -e
+
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+LABEL=""
+ALL_NAMESPACES=false
+
+print_usage() {
+  echo "kube-clean-replicasets - Remove all olf ReplicaSets with 0 desired pods"
+  echo " "
+  echo "kube-clean-replicasets [options]"
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace the to search in"
+  echo "-l, --selector        the label selector to match on"
+  echo "-A, --all-namespaces  match resources in all namespaces (default: false)"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE=$1
+      shift
+      ;;
+    -l|--selector)
+      shift
+      LABEL=$1
+      shift
+      ;;
+    -A|--all-namespaces)
+      ALL_NAMESPACES=true
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [[ "${LABEL}" != "" ]]; then
+  LABEL="-l ${LABEL}"
+fi
+
+if [ $ALL_NAMESPACES ]; then
+  kubectl get replicasets --all-namespaces $LABEL -o jsonpath='{range .items[?(@.status.replicas==0)]}--namespace {@.metadata.namespace} {@.metadata.name};{end}'  | \
+    tr ";" "\n" | \
+    xargs -I {} sh -c "kubectl delete rs {}"
+else
+  kubectl get replicasets --namespace $NAMESPACE $LABEL -o jsonpath='{range .items[?(@.status.replicas==0)]}--namespace {@.metadata.namespace} {@.metadata.name};{end}'  | \
+    tr ";" "\n" | \
+    xargs -I {} sh -c "kubectl delete rs {}"
+fi

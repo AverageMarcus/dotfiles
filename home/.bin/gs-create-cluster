@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+set -e
+
+NAMESPACE="org-giantswarm"
+RELEASE="20.0.0-alpha1"
+PROVIDER="aws"
+AZS="eu-west-1a"
+
+print_usage() {
+  echo "gs-create-cluster - create a Giant Swarm managed workload cluster"
+  echo " "
+  echo "gs-create-cluster [cluster-name]"
+  echo " "
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace the cluster is in (default: org-giantswarm)"
+  echo "-r, --release         the namespace the cluster is in (default: 20.0.0-alpha1)"
+  echo "-p, --provider        the cloud provider to use (default: aws)"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE=$1
+      shift
+      ;;
+    -r|--release)
+      shift
+      RELEASE=$1
+      shift
+      ;;
+    -p|--provider)
+      shift
+      PROVIDER=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+# Positional args
+NAME=${1:-wc001}
+
+PREFIXED_NAMESPACE="org-$NAMESPACE"
+case $NAMESPACE in org-*)
+  PREFIXED_NAMESPACE="$NAMESPACE"
+  NAMESPACE=${NAMESPACE#"org-"}
+esac
+
+echo "✨  Pre-flight checks"
+gs-get-cluster --namespace ${PREFIXED_NAMESPACE} ${NAME} &>/dev/null
+if [ $? -eq 0 ]; then
+  echo "Cluster named '${NAME}' already exists"
+  exit 1
+else
+  echo "Cleaning up any old awsclusterroleidentities..."
+  kubectl get --namespace ${PREFIXED_NAMESPACE} awsclusterroleidentities ${NAME} >/dev/null && kubectl delete --namespace ${PREFIXED_NAMESPACE} awsclusterroleidentities ${NAME}
+fi
+
+echo "✨  Creating an ${PROVIDER} cluster called '${NAMESPACE}/${NAME}' with release '${RELEASE}'"
+kubectl-gs template cluster --provider ${PROVIDER} --release ${RELEASE} --organization ${NAMESPACE} --name ${NAME} --description "$(whoami)'s test cluster" | kubectl apply -f -
+
+echo "✨  Adding node pool to cluster"
+kubectl-gs template nodepool --provider ${PROVIDER} --release ${RELEASE} --organization ${NAMESPACE} --cluster-name ${NAME} --description "$(whoami)'s test cluster" --availability-zones ${AZS} | kubectl apply -f -
+
+echo "✨  Checking status..."
+gs-get-cluster --namespace ${PREFIXED_NAMESPACE} ${NAME}

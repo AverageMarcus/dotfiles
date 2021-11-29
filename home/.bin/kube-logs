@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+set -e
+
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+POD=""
+ARGS=""
+
+print_usage() {
+  echo "kube-logs - tail logs from a pod"
+  echo " "
+  echo "kube-logs [options]"
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace the pod is in"
+  echo "-p, --pod             the name of the pod to get logs for"
+  echo "-a, --args            additional arguments to pass to kubectl logs command"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE=$1
+      shift
+      ;;
+    -p|--pod)
+      shift
+      POD=$1
+      shift
+      ;;
+    -a|--args)
+      shift
+      ARGS=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [[ "$POD" == "" ]]; then
+  which fzf &>/dev/null || (
+    echo "If no pod provided, fzf is required to select pods"
+    echo ""
+    print_usage
+    exit 1
+  )
+
+  pod=($(kubectl get pods --all-namespaces -owide | fzf | awk '{print $1, $2}'))
+  POD=$pod[1]
+  NAMESPACE=$pod[0]
+fi
+
+echo kubectl logs -f $ARGS --namespace $NAMESPACE $POD
+kubectl logs -f $ARGS --namespace $NAMESPACE $POD

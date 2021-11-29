@@ -3,18 +3,19 @@ alias _cat=`which cat`
 alias _curl=`which curl`
 alias _ls="/bin/ls"
 alias _grep="/bin/grep"
-alias _diff=`which diff`
+alias _diff="/usr/bin/diff"
 alias _du=`which du`
 alias _df=`which df`
 alias _find=`which find`
 alias _top=`which top`
 alias _ps="/bin/ps"
 alias _dig=`which dig`
+alias _git=`which git`
 
 # Aliases
-alias cat=' bat '
+alias cat='bat '
 alias curl='curlie'
-alias ls=' exa --group-directories-first --icons --header --git --ignore-glob=.git'
+alias ls='exa --group-directories-first --icons --header --git --ignore-glob=.git'
 alias grep='rg'
 alias diff='delta'
 alias du='dust'
@@ -26,10 +27,10 @@ alias ps='procs'
 alias dig='dog'
 alias kubectx='switch'
 alias kctx='switch'
-
 alias machine-info='macchina -t Boron --bar'
 alias watch='watch '
 alias tmp='cd $(mktemp -d)'
+
 lt() {
   DEPTH=$(echo $1 | grep "^[0-9]*$")
   if [ "$DEPTH" = "" ]; then
@@ -39,16 +40,24 @@ lt() {
   fi
   ls -l --tree -L $DEPTH -I ".git|cache|log|logs|node_modules|vendor" $@
 }
-alias aws='docker run --rm -ti -v ~/.aws:/root/.aws -v $(pwd):/aws -e AWS_PROFILE -e AWS_DEFAULT_REGION -e AWS_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY amazon/aws-cli'
 
 git() {
-  if [ "$1" = "take" ]; then
-    /usr/local/bin/git clone $2
+  if [ "$1" = "take" ]; then # Git clone then cd into new directory
+    _git clone $2
     cd $(basename $2 | sed 's/\.git$//')
-  elif [ "$1" = "commit" ]; then
+  elif [ "$1" = "commit" ]; then # Sign all commits
     shift
-    /usr/local/bin/git commit -s $@
+    _git commit -s $@
   else
-    /usr/local/bin/git $@
+    _git $@
   fi
 }
+
+# Giant Swarm specific
+alias prom='opsctl open -a prometheus --sso -i'
+alias happa='opsctl open -a happa --sso -i'
+alias grafana='opsctl open -a grafana --sso -i'
+alias argo='opsctl open -a argocd --sso -i'
+alias cloud-provider='opsctl open -a cloudprovider -i'
+alias get-cluster='gs-get-cluster'
+alias create-cluster='gs-create-cluster'

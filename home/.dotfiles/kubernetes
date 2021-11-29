@@ -1,0 +1,10 @@
+alias k='kubectl '
+alias kx='kube-exec '
+alias kl='kube-logs '
+alias kshell='kube-shell '
+alias kall='kube-all '
+alias fix-broken-replicasets='kube-clean-replicasets '
+alias kube-forward='kube-forward-all '
+
+source <(kubectl completion zsh)
+source <(tkn completion zsh)

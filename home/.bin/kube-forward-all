@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+set -e
+
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+HOST_PORT=10001
+
+print_usage() {
+  echo "kube-forward-all - create port-forwards for all pods in the given namespace"
+  echo " "
+  echo "kube-forward-all [options]"
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace to launch the pod in"
+  echo "-p, --port            the port to start at (and increment from for each service) (default: 10001)"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE=$1
+      shift
+      ;;
+    -p|--port)
+      shift
+      HOST_PORT=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+# Get all services first
+IFS=$'\n'
+SERVICES=( $(kubectl get service --namespace ${NAMESPACE} --no-headers -o json | jq '[.items[] | select(.metadata.annotations."kube-forward" != "false")] | (.[] | .metadata.name + "\t" + ([.spec.ports[].port] | join(",")))' -r | column -t) )
+unset IFS
+
+# Track the port-forwards we need to clean up
+TO_KILL=()
+
+cleanup() {
+  echo "\nClosing connections..."
+  for pid in "${TO_KILL[@]}"
+  do
+    (kill -2 $pid) &> /dev/null
+  done
+
+  trap - INT TERM
+}
+trap 'cleanup' INT TERM
+
+echo "Forwarding..."
+
+for s in "${SERVICES[@]}"
+do
+  SERVICE=( $(echo $s) )
+  NAME=${SERVICE[0]}
+  PORT=${SERVICE[1]}
+  PORTS=($(echo $PORT | tr "," "\n"))
+  for PORT in "${PORTS[@]}"
+  do
+    (kubectl port-forward --namespace ${NAMESPACE} svc/$NAME $HOST_PORT:$PORT &>/dev/null) &
+    BG_PID=$!
+
+    if `curl -s -o /dev/null --retry 5 --retry-delay 0 --retry-connrefused -m 3 http://localhost:$HOST_PORT`
+    then
+      echo "\e[1m$NAME:$PORT\e[0m ➡ \e[34mhttp://localhost:$HOST_PORT\e[0m"
+      TO_KILL+=($BG_PID)
+      ((HOST_PORT=HOST_PORT+1))
+    else
+      (kill -2 $BG_PID) &> /dev/null
+    fi
+  done
+done
+
+echo "\n\e[2m(Use [Ctl + C] to exit)"
+cat
+cleanup

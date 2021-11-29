@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -e
+
+TTL="24h"
+CERTIFICATE_GROUP="system:masters"
+
+print_usage() {
+  echo "gs-login - login to Giant Swarm managed clusters"
+  echo " "
+  echo "gs-login [INSTALLATION] [WORKLOAD CLUSTER] [ORGANISATION]"
+  echo " "
+  echo "Examples:"
+  echo "> gs-login gauss"
+  echo "> gs-login gauss mywc1"
+  echo " "
+  echo "Options:"
+  echo "-h, --help                show this help text"
+  echo "-t, --ttl                 the certificate ttl for the workload cluster login (default: 24h)"
+  echo "-g, --certificate-group   the certificate group to login as on the workload cluster (default: system:masters)"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -t|--ttl)
+      shift
+      TTL=$1
+      shift
+      ;;
+    -g|--certificate-group)
+      shift
+      CERTIFICATE_GROUP=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+case $# in
+  1)
+    kubectl gs login $1 2>/dev/null || opsctl kgs login -i $1
+    ;;
+  2)
+    kubectl gs login $1 --workload-cluster $2 --certificate-group system:masters --certificate-ttl 24h
+    ;;
+  3)
+    kubectl gs login $1 --workload-cluster $2 --certificate-group system:masters --certificate-ttl 24h --organization $3
+    ;;
+  *)
+    print_usage
+    exit 1
+    ;;
+esac

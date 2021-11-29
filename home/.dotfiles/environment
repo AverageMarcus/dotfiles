@@ -1,4 +1,3 @@
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/goworkspace/bin:$HOME/.cargo/bin:/usr/local/kubebuilder/bin:$HOME/.asdf/shims"
 export EDITOR='vim'
 export VISUAL='code'
 export GPG_TTY=$(tty)
@@ -12,14 +11,16 @@ fi
 
 # Node
 export NODE_ENV=localhost
-export NPM_TOKEN=`head -n 1 ~/.npmrc | sed 's~//registry.npmjs.org/:_authToken=\(.*\)~\1~'`
+[ -f ~/.npmrc ] && export NPM_TOKEN=`head -n 1 ~/.npmrc | sed 's~//registry.npmjs.org/:_authToken=\(.*\)~\1~'`
 
 # Go
 export GOPATH=$HOME/goworkspace
 export GO111MODULE=on
 
-# Krew
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-
 # Starship
+export STARSHIP_CONFIG=~/.starship/config.toml
 export STARSHIP_LOG=error
+
+# Bat
+export BAT_THEME="Monokai Extended Light"
+export BAT_STYLE="grid,header"
