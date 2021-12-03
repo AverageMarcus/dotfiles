@@ -5,6 +5,7 @@ export PATH="/home/linuxbrew/.linuxbrew/bin:/opt/homebrew/bin/:$PATH"
 GITEMAIL=$(git config --get user.email)
 
 [ -d ~/.additional_dotfiles ] || (mkdir -p ~/.additional_dotfiles && touch ~/.additional_dotfiles/credentials)
+[ -d /usr/local/share/zsh/site-functions ] || (sudo mkdir -p /usr/local/share/zsh/site-functions && sudo chmod 777 /usr/local/share/zsh/site-functions)
 
 # Install homebrew
 which brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -65,7 +66,7 @@ fulllink() {
   if [ ! -z `which greadlink` ]
   then
     greadlink -f $1
-  else 
+  else
     readlink -f $1
   fi
 }
@@ -79,14 +80,14 @@ case "${OSTYPE}" in
     ;;
   *darwin*)
     # Mac specific setup
-    MAC_BREW_TOOLS=( pinentry-mac gpg gawk coreutils )
+    MAC_BREW_TOOLS=( pinentry-mac gpg gawk coreutils wget )
     for tool in "${MAC_BREW_TOOLS[@]}"
     do
       printf "${tool}..."
       brew upgrade ${tool} &>/dev/null || brew install ${tool} &>/dev/null
       printf " ✅\n"
     done
-    
+
 
     FILES=$(find ./os-specific/darwin/home -maxdepth 1 -mindepth 1 | tr '\n' ' ')
     for file in $FILES

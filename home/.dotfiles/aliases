@@ -46,7 +46,7 @@ lt() {
 git() {
   if [ "$1" = "take" ]; then # Git clone then cd into new directory
     _git clone $2
-    cd $(basename $2 | sed 's/\.git$//')
+    cd $(basename -s .git $2)
   elif [ "$1" = "commit" ]; then # Sign all commits
     shift
     _git commit -s $@
