@@ -25,3 +25,6 @@
 
 /os-specific/darwin/home/.gnupg/*
 !/os-specific/darwin/home/.gnupg/gpg-agent.conf
+/home/.kube/*
+!/home/.kube/clusters
+!/home/.kube/switch-config.yaml
