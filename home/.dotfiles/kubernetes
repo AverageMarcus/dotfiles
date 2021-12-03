@@ -7,4 +7,6 @@ alias fix-broken-replicasets='kube-clean-replicasets '
 alias kube-forward='kube-forward-all '
 
 source <(kubectl completion zsh)
-source <(tkn completion zsh)
+# tkn currently doesn't work with Mac ARM chips
+# source <(tkn completion zsh)
+

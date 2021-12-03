@@ -22,3 +22,6 @@
 .env
 
 *.log
+
+/os-specific/darwin/home/.gnupg/*
+!/os-specific/darwin/home/.gnupg/gpg-agent.conf

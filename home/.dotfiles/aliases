@@ -11,6 +11,7 @@ alias _top=`which top`
 alias _ps="/bin/ps"
 alias _dig=`which dig`
 alias _git=`which git`
+alias _readlink=`which readlink`
 
 # Aliases
 alias cat='bat '
@@ -30,6 +31,7 @@ alias kctx='switch'
 alias machine-info='macchina -t Boron --bar'
 alias watch='watch '
 alias tmp='cd $(mktemp -d)'
+which greadlink &>/dev/null && alias readlink=`which greadlink`
 
 lt() {
   DEPTH=$(echo $1 | grep "^[0-9]*$")

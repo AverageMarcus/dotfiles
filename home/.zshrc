@@ -4,6 +4,7 @@ PATH_DIRS=(
   "${GOPATH:-${HOME}/goworkspace}/bin"
   "${HOME}/.cargo/bin"
   "/home/linuxbrew/.linuxbrew/bin"
+  "/opt/homebrew/bin/"
   "/usr/local/bin"
   "/usr/bin"
   "/bin"

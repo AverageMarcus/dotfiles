@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+export PATH="/home/linuxbrew/.linuxbrew/bin:/opt/homebrew/bin/:$PATH"
 
 GITEMAIL=$(git config --get user.email)
 
@@ -13,13 +13,13 @@ echo "🔵  Setting up zsh"
 
 # Install oh-my-zsh
 printf "Cloning oh-my-zsh..."
-[ -d ~/.oh-my-zsh ] || sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+[ -d ${HOME}/.oh-my-zsh ] || sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 printf " ✅\n"
 
 # Install ZSH plugins
 printf "Cloning zsh plugins..."
-[ -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions ] || git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-[ -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+[ -d ${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions ] || git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+[ -d ${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 printf " ✅\n"
 
 # Install tools
@@ -61,16 +61,14 @@ do
   printf " ✅\n"
 done
 
-echo "🔵  Adding configuration"
-FILES=$(find ./home -maxdepth 1 -mindepth 1 -printf '%f ')
-for file in $FILES
-do
-  f=$(readlink -f "./home/${file}")
-  printf "Linking ${f}..."
-  ln -sfn ${f} ~/$(basename "./home/${file}")
-  printf " ✅\n"
-done
-
+fulllink() {
+  if [ ! -z `which greadlink` ]
+  then
+    greadlink -f $1
+  else 
+    readlink -f $1
+  fi
+}
 
 echo "🔵  OS Specific setup"
 echo "Detected OS type: ${OSTYPE}"
@@ -81,21 +79,43 @@ case "${OSTYPE}" in
     ;;
   *darwin*)
     # Mac specific setup
-    BREW_TOOLS=( pinentry-mac gpg gawk coreutils )
+    MAC_BREW_TOOLS=( pinentry-mac gpg gawk coreutils )
     for tool in "${MAC_BREW_TOOLS[@]}"
     do
       printf "${tool}..."
       brew upgrade ${tool} &>/dev/null || brew install ${tool} &>/dev/null
       printf " ✅\n"
     done
+    
 
-    FILES=$(find ./os-specific/darwin/home -maxdepth 1 -mindepth 1 -printf '%f ')
+    FILES=$(find ./os-specific/darwin/home -maxdepth 1 -mindepth 1 | tr '\n' ' ')
     for file in $FILES
     do
-      f=$(readlink -f "./os-specific/darwin/home/${file}")
-      printf "Linking ${f}..."
-      ln -sfn ${f} ~/$(basename "./os-specific/darwin/home/${file}")
+      f=$(fulllink "${file}")
+      dst="${HOME}/$(basename "./os-specific/darwin/home/${file}")"
+      printf "Linking ${f}=>${dst}"
+      ln -sfn ${f} ${dst}
       printf " ✅\n"
     done
+
+    [ -f "/usr/local/bin/pinentry-mac" ] || sudo ln -s `which pinentry-mac` /usr/local/bin/pinentry-mac
+    gpgconf --kill gpg-agent
+
+    if [ $(gpg --list-secret-keys --keyid-format=long 2>/dev/null | wc -l | xargs) -eq 0 ]; then
+      echo "⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️"
+      echo "⚠️  You'll need to create a new GPG key ⚠️"
+      echo "⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️"
+    fi
     ;;
 esac
+
+echo "🔵  Adding configuration"
+FILES=$(find ./home -maxdepth 1 -mindepth 1 | tr '\n' ' ')
+for file in $FILES
+do
+  f=$(fulllink "${file}")
+  dst="${HOME}/$(basename "./home/${file}")"
+  printf "Linking ${f}=>${dst}"
+  ln -sfn ${f} ${dst}
+  printf " ✅\n"
+done
