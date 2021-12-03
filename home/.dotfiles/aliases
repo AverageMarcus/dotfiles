@@ -45,8 +45,19 @@ lt() {
 
 git() {
   if [ "$1" = "take" ]; then # Git clone then cd into new directory
-    _git clone $2
-    cd $(basename -s .git $2)
+    if [ $# -gt 2 ]; then
+      _git clone ${@:2}
+      cd $3
+    else
+      ORG=$(echo $2 | sed -e 's|https://||' -e 's|/| |g' -e 's|:| |g' | cut -f 2 -d ' ')
+      REPO=$(echo $2 | sed -e 's|https://||' -e 's|/| |g' -e 's|:| |g' | cut -f 3 -d ' ' | xargs basename -s .git)
+
+      DST="${HOME}/Code/${ORG}/${REPO}"
+      mkdir -p ${DST}
+
+      _git clone $2 ${DST}
+      cd ${DST}
+    fi
   elif [ "$1" = "commit" ]; then # Sign all commits
     shift
     _git commit -s $@
