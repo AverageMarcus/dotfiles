@@ -19,6 +19,7 @@
 [delta]
 	line-numbers = true
 	side-by-side = true
+
 [push]
 	default = simple
 
@@ -59,3 +60,5 @@
 
 [url "ssh://git@github.com"]
 	insteadOf = https://github.com
+[pull]
+	rebase = false
