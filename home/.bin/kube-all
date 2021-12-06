@@ -3,6 +3,7 @@
 set -e
 
 NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+NAMESPACE=${NAMESPACE:-default}
 LABEL=""
 ALL_NAMESPACES=false
 
