@@ -56,7 +56,7 @@ done
 
 case ${#POS_ARGS[@]} in
   1)
-    kubectl gs login ${POS_ARGS[0]} ${DEBUG} 2>/dev/null || opsctl kgs login -i ${POS_ARGS[0]}
+    kubectl gs login ${POS_ARGS[0]} ${DEBUG} 2>/dev/null || opsctl kgs login -i ${POS_ARGS[0]} || opsctl create kubeconfig ${POS_ARGS[0]}
     ;;
   2)
     kubectl gs login ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} ${DEBUG}
