@@ -42,6 +42,7 @@ while test $# -gt 0; do
     --debug)
       DEBUG="--debug"
       shift
+      ;;
     /)
       # We want to ignore slash seperators between MC and WC
       shift
