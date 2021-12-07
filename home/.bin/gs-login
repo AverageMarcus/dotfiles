@@ -4,6 +4,7 @@ set -e
 
 TTL="24h"
 CERTIFICATE_GROUP="system:masters"
+DEBUG=""
 
 print_usage() {
   echo "gs-login - login to Giant Swarm managed clusters"
@@ -19,6 +20,8 @@ print_usage() {
   echo "-t, --ttl                 the certificate ttl for the workload cluster login (default: 24h)"
   echo "-g, --certificate-group   the certificate group to login as on the workload cluster (default: system:masters)"
 }
+
+POS_ARGS=()
 
 while test $# -gt 0; do
   case "$1" in
@@ -36,21 +39,29 @@ while test $# -gt 0; do
       print_usage
       exit 0
       ;;
+    --debug)
+      DEBUG="--debug"
+      shift
+    /)
+      # We want to ignore slash seperators between MC and WC
+      shift
+      ;;
     *)
-      break
+      POS_ARGS+=(`echo $1 | tr '/' ' '`)
+      shift
       ;;
   esac
 done
 
-case $# in
+case ${#POS_ARGS[@]} in
   1)
-    kubectl gs login $1 2>/dev/null || opsctl kgs login -i $1
+    kubectl gs login ${POS_ARGS[0]} ${DEBUG} 2>/dev/null || opsctl kgs login -i ${POS_ARGS[0]}
     ;;
   2)
-    kubectl gs login $1 --workload-cluster $2 --certificate-group system:masters --certificate-ttl 24h
+    kubectl gs login ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} ${DEBUG}
     ;;
   3)
-    kubectl gs login $1 --workload-cluster $2 --certificate-group system:masters --certificate-ttl 24h --organization $3
+    kubectl gs login ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} --organization ${POS_ARGS[2]} ${DEBUG}
     ;;
   *)
     print_usage
