@@ -28,7 +28,7 @@ BREW_TOOLS=(
   argocd bandwhich bat danielfoehrkn/switch/switch derailed/k9s/k9s dive dog duf dust exa fd fzf
   git-delta git-delta go helm homebrew/cask-fonts/font-open-dyslexic-nerd-font htop jq kind krew
   kubectl kubectx kustomize node procs progress ripgrep rs/tap/curlie rust starship
-  tektoncd/tools/tektoncd-cli tldr tailscale
+  tektoncd/tools/tektoncd-cli tldr tailscale python-yq
   )
 CARGO_TOOLS=( macchina bottom )
 NODE_TOOLS=( git-split-diffs )
