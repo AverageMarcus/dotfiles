@@ -56,13 +56,13 @@ done
 
 case ${#POS_ARGS[@]} in
   1)
-    kubectl gs login ${POS_ARGS[0]} ${DEBUG} 2>/dev/null || opsctl kgs login -i ${POS_ARGS[0]} || opsctl create kubeconfig ${POS_ARGS[0]}
+    kubectl gs login --kubeconfig=${KUBECONFIG} ${POS_ARGS[0]} ${DEBUG} 2>/dev/null || opsctl kgs login -i ${POS_ARGS[0]} || opsctl create kubeconfig ${POS_ARGS[0]}
     ;;
   2)
-    kubectl gs login ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} ${DEBUG}
+    kubectl gs login --kubeconfig=${KUBECONFIG} ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} ${DEBUG}
     ;;
   3)
-    kubectl gs login ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} --organization ${POS_ARGS[2]} ${DEBUG}
+    kubectl gs login --kubeconfig=${KUBECONFIG} ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} --organization ${POS_ARGS[2]} ${DEBUG}
     ;;
   *)
     print_usage
