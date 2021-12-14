@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
-
-TTL="24h"
+TTL="8h"
 CERTIFICATE_GROUP="system:masters"
 DEBUG=""
 
@@ -17,7 +15,7 @@ print_usage() {
   echo " "
   echo "Options:"
   echo "-h, --help                show this help text"
-  echo "-t, --ttl                 the certificate ttl for the workload cluster login (default: 24h)"
+  echo "-t, --ttl                 the certificate ttl for the workload cluster login (default: 8h)"
   echo "-g, --certificate-group   the certificate group to login as on the workload cluster (default: system:masters)"
 }
 
@@ -54,19 +52,24 @@ while test $# -gt 0; do
   esac
 done
 
+if [ ${#POS_ARGS[@]} -eq 0 ]; then
+  POS_ARGS+=(`opsctl list installations --short | tr ' ' '\n' | fzf`)
+fi
+
+MC_EXIST=$(kubectl config get-contexts --no-headers -o name gs-${POS_ARGS[0]} 2>/dev/null | wc -l | xargs)
+
 case ${#POS_ARGS[@]} in
-  0)
-    INST=$(opsctl list installations --short | tr ' ' '\n' | fzf)
-    kubectl gs login --kubeconfig=${KUBECONFIG} ${INST} ${DEBUG} 2>/dev/null || opsctl kgs login -i ${INST} || opsctl create kubeconfig ${INST}
-    ;;
   1)
-    kubectl gs login --kubeconfig=${KUBECONFIG} ${POS_ARGS[0]} ${DEBUG} 2>/dev/null || opsctl kgs login -i ${POS_ARGS[0]} || opsctl create kubeconfig ${POS_ARGS[0]}
+    kubectl config delete-context gs-${POS_ARGS[0]} &>/dev/null
+    kubectl gs login ${POS_ARGS[0]} ${DEBUG} 2>/dev/null || opsctl kgs login -i ${POS_ARGS[0]} || opsctl create kubeconfig ${POS_ARGS[0]}
     ;;
   2)
-    kubectl gs login --kubeconfig=${KUBECONFIG} ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} ${DEBUG}
+    if [ ${MC_EXIST} -eq 0 ]; then gs-login ${POS_ARGS[0]}; fi
+    kubectl gs login ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} ${DEBUG}
     ;;
   3)
-    kubectl gs login --kubeconfig=${KUBECONFIG} ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} --organization ${POS_ARGS[2]} ${DEBUG}
+    if [ ${MC_EXIST} -eq 0 ]; then gs-login ${POS_ARGS[0]}; fi
+    kubectl gs login ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} --organization ${POS_ARGS[2]} ${DEBUG}
     ;;
   *)
     print_usage
