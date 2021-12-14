@@ -61,7 +61,7 @@ MC_EXIST=$(kubectl config get-contexts --no-headers -o name gs-${POS_ARGS[0]} 2>
 case ${#POS_ARGS[@]} in
   1)
     kubectl config delete-context gs-${POS_ARGS[0]} &>/dev/null
-    kubectl gs login ${POS_ARGS[0]} ${DEBUG} 2>/dev/null || opsctl kgs login -i ${POS_ARGS[0]} || opsctl create kubeconfig ${POS_ARGS[0]}
+    kubectl gs login ${POS_ARGS[0]} ${DEBUG} 2>/dev/null || opsctl kgs login -i ${POS_ARGS[0]} || opsctl create kubeconfig -i ${POS_ARGS[0]}
     ;;
   2)
     if [ ${MC_EXIST} -eq 0 ]; then gs-login ${POS_ARGS[0]}; fi
