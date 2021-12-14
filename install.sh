@@ -32,7 +32,7 @@ BREW_TOOLS=(
   )
 CARGO_TOOLS=( macchina bottom )
 NODE_TOOLS=( git-split-diffs )
-KREW_TOOLS=( gs )
+KREW_TOOLS=( gs outdated tree )
 
 echo "🔵  Installing / updating tools"
 
