@@ -61,7 +61,7 @@ if [ $? -eq 0 ]; then
   exit 1
 else
   echo "Cleaning up any old awsclusterroleidentities..."
-  kubectl get --namespace ${PREFIXED_NAMESPACE} awsclusterroleidentities ${NAME} >/dev/null && kubectl delete --namespace ${PREFIXED_NAMESPACE} awsclusterroleidentities ${NAME}
+  kubectl delete --namespace ${PREFIXED_NAMESPACE} awsclusterroleidentities ${NAME} 2>/dev/null
 fi
 
 echo "✨  Creating an ${PROVIDER} cluster called '${NAMESPACE}/${NAME}' with release '${RELEASE}'"
