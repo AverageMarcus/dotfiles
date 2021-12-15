@@ -52,6 +52,7 @@ while test $# -gt 0; do
   esac
 done
 
+NAMESPACE=${NAMESPACE:-default}
 
 echo kubectl run -it --namespace $NAMESPACE $POD --image $IMAGE --restart Never --rm -- $CMD
 kubectl run -it --namespace $NAMESPACE $POD --image $IMAGE --restart Never --rm -- $CMD
