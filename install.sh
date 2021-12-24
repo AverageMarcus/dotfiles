@@ -89,7 +89,7 @@ case "${OSTYPE}" in
     done
 
 
-    FILES=$(find ./os-specific/darwin/home -maxdepth 1 -mindepth 1 | tr '\n' ' ')
+    FILES=$(/usr/bin/find ./os-specific/darwin/home -maxdepth 1 -mindepth 1 | tr '\n' ' ')
     for file in $FILES
     do
       f=$(fulllink "${file}")
@@ -111,12 +111,12 @@ case "${OSTYPE}" in
 esac
 
 echo "🔵  Adding configuration"
-FILES=$(find ./home -maxdepth 1 -mindepth 1 | tr '\n' ' ')
+FILES=$(/usr/bin/find ./home -maxdepth 1 -mindepth 1 | tr '\n' ' ')
 for file in $FILES
 do
   f=$(fulllink "${file}")
   dst="${HOME}/$(basename "./home/${file}")"
-  printf "Linking ${f}=>${dst}"
+  printf "Linking ${f} => ${dst}"
   ln -sfn ${f} ${dst}
   printf " ✅\n"
 done
