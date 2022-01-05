@@ -69,7 +69,11 @@ case ${#POS_ARGS[@]} in
     ;;
   3)
     if [ ${MC_EXIST} -eq 0 ]; then gs-login ${POS_ARGS[0]}; fi
-    kubectl gs login ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} --organization ${POS_ARGS[2]} ${DEBUG}
+    ORG_FLAG="--organization ${POS_ARGS[2]}"
+    if [[ "${POS_ARGS[2]}" == "default" ]]; then
+      ORG_FLAG="--insecure-namespace"
+    fi
+    kubectl gs login ${POS_ARGS[0]} --workload-cluster ${POS_ARGS[1]} --certificate-group ${CERTIFICATE_GROUP} --certificate-ttl ${TTL} ${ORG_FLAG} ${DEBUG}
     ;;
   *)
     print_usage
