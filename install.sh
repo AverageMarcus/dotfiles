@@ -107,6 +107,17 @@ case "${OSTYPE}" in
       echo "⚠️  You'll need to create a new GPG key ⚠️"
       echo "⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️"
     fi
+
+
+    # Handle other files outside of the user's home directory
+    echo "Handiling non-standard files:"
+    # 1. Tabby config
+    f="./other-files/tabby/config.yaml"
+    dst="/Users/${USER}/Library/Application\ Support/tabby/config.yaml"
+    printf "Linking ${f}=>${dst}"
+    ln -sfn ${f} ${dst}
+    printf " ✅\n"
+
     ;;
 esac
 
