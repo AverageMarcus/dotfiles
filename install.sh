@@ -29,6 +29,7 @@ BREW_TOOLS=(
   git-delta go helm homebrew/cask-fonts/font-open-dyslexic-nerd-font htop jq kind krew
   kubectl kubectx kustomize node procs progress ripgrep rs/tap/curlie rust starship
   tektoncd/tools/tektoncd-cli tldr tailscale python-yq hashicorp/tap/vault stats
+  tabby
   )
 CARGO_TOOLS=( macchina bottom )
 NODE_TOOLS=( git-split-diffs )
@@ -112,8 +113,8 @@ case "${OSTYPE}" in
     # Handle other files outside of the user's home directory
     echo "Handiling non-standard files:"
     # 1. Tabby config
-    f="./other-files/tabby/config.yaml"
-    dst="/Users/${USER}/Library/Application\ Support/tabby/config.yaml"
+    f=$(fulllink "./other-files/tabby/config.yaml")
+    dst="/Users/${USER}/Library/Application Support/tabby/config.yaml"
     printf "Linking ${f}=>${dst}"
     ln -sfn ${f} ${dst}
     printf " ✅\n"
