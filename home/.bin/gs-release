@@ -43,6 +43,10 @@ VERSION_PATCH=${VERSION_PARTS[2]}
 echo "The latest released version is ${CURRENT_TAG}"
 echo ""
 
+echo "The release will include:"
+sed -n "/^## \[Unreleased\]$/,/^## /p" CHANGELOG.md | tail -n +3 | tail -r | tail -n +2 | tail -r | sed "s/^/    /g"
+echo ""
+
 if [[ "$SEMVER" == "" ]]; then
   printf "What semver release level? (patch, minor or major): "
   read SEMVER
