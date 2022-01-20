@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+NAMESPACE=""
+
+set -e
+
+print_usage() {
+  echo "kube-template - Quickly template up kubernetes resources"
+  echo " "
+  echo "kube-template [options] RESOURCE_KIND NAME [extra arguments]"
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace the to search in"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE="--namespace $1"
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+NAME=${2}
+
+addLabelsAndAnnotations() {
+  yq e '.metadata.labels."app.kubernetes.io/name" = "'${NAME}'" |
+            .metadata.labels."giantswarm.io/user" = "'$(whoami)'" |
+            .metadata.annotations."giantswarm.io/description" = ""' -
+}
+
+case "$1" in
+  deployment|dp)
+    kubectl create ${NAMESPACE} deployment ${NAME} --image=nginx:1.21 --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    ;;
+  ingress|in)
+    kubectl create ${NAMESPACE} ingress ${NAME} --dry-run=client -o yaml --rule=example.com/=my-service:web ${@:3} | addLabelsAndAnnotations
+    ;;
+  service|svc)
+    kubectl create ${NAMESPACE} service clusterip ${NAME} --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    ;;
+  configmap|cm)
+    kubectl create ${NAMESPACE} configmap ${NAME} --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    ;;
+  secret|sec)
+    kubectl create ${NAMESPACE} secret generic ${NAME} --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    ;;
+  cronjob|cj)
+    kubectl create ${NAMESPACE} cronjob ${NAME} --image=alpine:latest --schedule="1 * * * *" --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    ;;
+  job|jo)
+    kubectl create ${NAMESPACE} job ${NAME} --image=alpine:latest --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    ;;
+esac
+

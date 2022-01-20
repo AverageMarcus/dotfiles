@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -e
+
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+NAMESPACE=${NAMESPACE:-default}
+
+print_usage() {
+  echo "kube-trigger-cronjob - Triggers a CronJob by creating a new job based on it"
+  echo " "
+  echo "kube-trigger-cronjob [options] CRONJOB_NAME"
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace the to search in"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+NAME=${1}
+
+kubectl create job --namespace ${NAMESPACE} ${NAME}-manual --from=cronjob/${NAME} ${@:3}
+
