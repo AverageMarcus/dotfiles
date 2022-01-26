@@ -29,7 +29,7 @@ BREW_TOOLS=(
   git-delta go helm homebrew/cask-fonts/font-open-dyslexic-nerd-font htop jq kind krew
   kubectl kubectx kustomize node procs progress ripgrep rs/tap/curlie rust starship
   tektoncd/tools/tektoncd-cli tldr tailscale yq hashicorp/tap/vault stats
-  tabby vale
+  tabby vale lastpass-cli
   )
 CARGO_TOOLS=( macchina bottom )
 NODE_TOOLS=( git-split-diffs )
