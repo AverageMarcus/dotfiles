@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -e
+
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+NAMESPACE="-A"
+
+print_usage() {
+  echo "kube-restarting - Show all pods with restarts"
+  echo " "
+  echo "kube-restarting [options]"
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace the to search in (searches all if not set)"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE="-n $1"
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+kubectl get pod ${NAMESPACE} -o json | jq --raw-output '.items[] | select([.status.containerStatuses[].restartCount] | add > 0)  | "\( .metadata.namespace)/\( .metadata.name) \t \([.status.containerStatuses[].restartCount] | add)" ' | column -t
