@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+ACCOUNT_ID=${AWS_ACCOUNTID}
+ROLE=GiantSwarmAdmin
+MFA=
+MFA_ARN=arn:aws:iam::${AWS_ACCOUNTID}:mfa/marcus@giantswarm.io
+
+print_usage() {
+  echo "gs-aws - set up AWS credentials"
+  echo " "
+  echo "gs-aws"
+  echo " "
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-a, --account         the AWS account number (default: \$AWS_ACCOUNTID)"
+  echo "-r, --role            the role to assume (default: GiantSwarmAdmin)"
+  echo "-t, --mfa-token       the MFA token to use when generating a session [Required]"
+  echo "-m, --mfa-arn         the ARN of the MFA device (Default ${MFA_ARN})"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -a|--account)
+      shift
+      ACCOUNT_ID=$1
+      shift
+      ;;
+    -r|--role)
+      shift
+      ROLE=$1
+      shift
+      ;;
+    -t|--mfa-token)
+      shift
+      MFA=$1
+      shift
+      ;;
+    -m|--mfa-arn)
+      shift
+      MFA_ARN=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [ -z $AWS_ACCESS_KEY_ID ] || [ -z $AWS_SECRET_ACCESS_KEY ] || [ -z $ACCOUNT_ID ]; then
+  echo "Initial AWS credentials required"
+  exit 1
+fi
+
+if [ -z $MFA ] || [ -z $MFA_ARN ]; then
+  echo "MFA token and ARN required"
+  exit 1
+fi
+
+printf "✨  Getting session credentials..."
+SESSION_JSON=$(aws sts get-session-token --serial-number ${MFA_ARN} --token-code ${MFA})
+printf "\n\e[1A\e[K✅  Got session credentials\n"
+
+export AWS_SECRET_ACCESS_KEY=$(echo $SESSION_JSON | jq -r '.Credentials.SecretAccessKey')
+export AWS_ACCESS_KEY_ID=$(echo $SESSION_JSON | jq -r '.Credentials.AccessKeyId')
+export AWS_SESSION_TOKEN=$(echo $SESSION_JSON | jq -r '.Credentials.SessionToken')
+export EXPIRATION=$(echo $SESSION_JSON | jq -r '.Credentials.Expiration')
+
+if [ "${ACCOUNT_ID}" != "${AWS_ACCOUNTID}" ]; then
+  printf "✨  Assuming cross-account role..."
+  ASSUME_SESSION=$(aws sts assume-role --role-session-name $(whoami)-aws --role-arn arn:aws:iam::${ACCOUNT_ID}:role/${ROLE})
+  export AWS_SECRET_ACCESS_KEY=$(echo $ASSUME_SESSION | jq -r '.Credentials.SecretAccessKey')
+  export AWS_ACCESS_KEY_ID=$(echo $ASSUME_SESSION | jq -r '.Credentials.AccessKeyId')
+  export AWS_SESSION_TOKEN=$(echo $ASSUME_SESSION | jq -r '.Credentials.SessionToken')
+  export EXPIRATION=$(echo $ASSUME_SESSION | jq -r '.Credentials.Expiration')
+  printf "\n\e[1A\e[K✅  Assumed role\n"
+fi
+
+mkdir -p ~/.aws
+cat > ~/.aws/credentials << EOF
+[giantswarm]
+aws_access_key_id=${AWS_ACCESS_KEY_ID}
+aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}
+aws_session_token=${AWS_SESSION_TOKEN}
+expiration=${EXPIRATION}
+EOF
+
+echo "⚡️ AWS credentials setup"
+echo ""
+echo "ℹ️  You'll need to switch to the 'giantswarm' profile:"
+echo ""
+echo "unset AWS_ACCESS_KEY_ID"
+echo "unset AWS_SECRET_ACCESS_KEY"
+echo "export AWS_PROFILE=giantswarm"
