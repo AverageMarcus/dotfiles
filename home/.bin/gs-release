@@ -26,7 +26,7 @@ done
 
 SEMVER=$1
 
-CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null)
+CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
 MAIN_BRANCH=$(git remote show origin 2>/dev/null|grep HEAD|sed 's/.* //')
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 
