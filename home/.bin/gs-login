@@ -58,6 +58,7 @@ case ${#POS_ARGS[@]} in
     exit 1
     ;;
   *)
+    kubectl config delete-context gs-${POS_ARGS[0]} &>/dev/null
     opsctl login ${DEBUG} ${POS_ARGS[@]}
     ;;
 esac
