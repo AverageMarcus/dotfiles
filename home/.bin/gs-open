@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+DEBUG=""
+
+SUPPORTED_APPS="alertmanager argocd grafana happa kibana kyverno prometheus"
+
+print_usage() {
+  echo "gs-open - open apps on Giant Swarm clusters"
+  echo " "
+  echo "gs-open [APP] [INSTALLATION] [WORKLOAD CLUSTER] "
+  echo " "
+  echo "Examples:"
+  echo "> gs-open prometheus gauss"
+  echo "> gs-open alertmanager gauss mywc1"
+  echo " "
+  echo "Options:"
+  echo "-h, --help                show this help text"
+  echo "--debug                   show debug log output"
+}
+
+POS_ARGS=()
+
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    --debug)
+      DEBUG="--level=debug"
+      shift
+      ;;
+    /)
+      # We want to ignore slash seperators between MC and WC
+      shift
+      ;;
+    *)
+      POS_ARGS+=(`echo $1 | tr '/' ' '`)
+      shift
+      ;;
+  esac
+done
+
+if [ ${#POS_ARGS[@]} -eq 0 ]; then
+  POS_ARGS+=(`echo ${SUPPORTED_APPS} | tr ' ' '\n' | fzf`)
+fi
+if [ ${#POS_ARGS[@]} -eq 1 ]; then
+  POS_ARGS+=(`opsctl list installations --short | tr ' ' '\n' | fzf`)
+fi
+
+case ${#POS_ARGS[@]} in
+  0)
+    print_usage
+    exit 1
+    ;;
+  2)
+    echo "✨  Opening ${POS_ARGS[0]} on ${POS_ARGS[1]}"
+    opsctl open ${DEBUG} --app ${POS_ARGS[0]} --installation ${POS_ARGS[1]}
+    ;;
+  3)
+    echo "✨  Opening ${POS_ARGS[0]} on ${POS_ARGS[1]}/${POS_ARGS[2]}"
+    opsctl open ${DEBUG} --app ${POS_ARGS[0]} --installation ${POS_ARGS[1]} --workload-cluster ${POS_ARGS[2]}
+    ;;
+esac
