@@ -54,9 +54,3 @@ preexec() {
   if overridden; then return; fi
   printf "\033]0;%s\a" "${1%% *} | $cwd" # Omit construct from $1 to show args
 }
-
-
-# Giant Swarm specific
-which opsctl &>/dev/null && opsctl completion zsh > /usr/local/share/zsh/site-functions/_opsctl
-which gsctl &>/dev/null && gsctl completion zsh --stdout > /usr/local/share/zsh/site-functions/_gsctl
-which devctl &>/dev/null && devctl completion zsh > /usr/local/share/zsh/site-functions/_devctl
