@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+set -e
+
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+NAMESPACE=${NAMESPACE:-default}
+
+print_usage() {
+  echo "kube-force-delete - Force delete resources, even those with finalizers"
+  echo " "
+  echo "kube-force-delete [RESOURCE_TYPE] [RESOURCE_NAME]"
+  echo " "
+  echo "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace the resource is in (default: current namespace)"
+}
+
+POS_ARGS=()
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    /)
+      # We want to ignore slash seperators between resource types and names
+      shift
+      ;;
+    *)
+      POS_ARGS+=(`echo $1 | tr '/' ' '`)
+      shift
+      ;;
+  esac
+done
+
+if [ ${#POS_ARGS[@]} -lt 2 ]; then
+  echo "Please provide the resource type and name to delete"
+  exit 1
+fi
+
+printf "⚠️ This could leave cloud resources undeleted if finalizers aren't honoured. ⚠️\n"
+printf "Are you sure you want to delete ${POS_ARGS[0]}/${POS_ARGS[1]}? (y/n): "
+read CONFIRM
+
+if [ "${CONFIRM}" = "y" ]; then
+  echo "💣  OK, I hope you know what you're doing..."
+  kubectl patch -p '{"metadata":{"finalizers":null}}' --type=merge -n ${NAMESPACE} ${POS_ARGS[@]}
+  kubectl delete -n ${NAMESPACE} ${POS_ARGS[@]}
+else
+  echo "Aborting..."
+  exit 1
+fi
