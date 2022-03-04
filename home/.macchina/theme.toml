@@ -1,0 +1,43 @@
+
+hide_ascii = true
+spacing = 1
+padding = 0
+separator = "❯"
+key_color = "Cyan"
+separator_color = "LightMagenta"
+
+[bar]
+glyph = "⭘"
+symbol_open = ""
+symbol_close = ""
+visible = true
+
+[box]
+title = " Info "
+visible = true
+
+[box.inner_margin]
+x = 1
+y = 0
+
+[randomize]
+key_color = false
+separator_color = false
+
+[keys]
+host = "Host"
+kernel = "Kernel"
+battery = "Battery"
+os = "OS"
+distro = "Distro"
+terminal = "Terminal"
+shell = "Shell"
+packages = "Packages"
+uptime = "Uptime"
+memory = "Memory"
+machine = "Machine"
+local_ip = "IP"
+backlight = "Brightness"
+resolution = "Resolution"
+cpu_load = "CPU Load"
+cpu = "CPU"

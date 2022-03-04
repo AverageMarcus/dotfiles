@@ -29,3 +29,5 @@ done
 rm -f ~/.zcompdump; compinit
 
 eval "$(starship init zsh)"
+
+macchina --config ~/.macchina/config.toml --theme ~/.macchina/theme

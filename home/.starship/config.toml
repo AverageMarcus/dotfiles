@@ -14,32 +14,46 @@ format = """\
   $terraform\
   $package\
   $custom\
+  $time\
   $line_break\
   $jobs\
-  $time\
   $character\
   """
 
 command_timeout = 1000
 add_newline = true
 
-[character]
-success_symbol = "[✨](yellow)"
-error_symbol = "[✗](red)"
+[directory]
+format = "┏   [$path]($style)[$read_only]($read_only_style) "
 
-[aws]
-symbol = " "
-format = "[$symbol$profile]($style) "
+[character]
+success_symbol = "┗ [✨](yellow)"
+error_symbol = "┗ [✗](red)"
+
+[git_branch]
+format = "⎮ [$symbol$branch]($style) "
+symbol = "🌱 "
 
 [git_commit]
 only_detached = true
 
+[git_status]
+format = '\($all_status$ahead_behind\) '
+up_to_date = "[✓](green)"
+modified = "[!](bold fg:208)"
+untracked = "[?](bold fg:75)"
+staged = '[++\($count\)](green)'
+
+[aws]
+symbol = " "
+format = "⎮ [$symbol$profile]($style) "
+
 [golang]
 symbol = " "
-format = "[$symbol$version]($style) "
+format = "⎮ [$symbol$version](fg:45) "
 
 [kubernetes]
-format = '[$symbol$context \($namespace\)]($style) '
+format = '⎮ [$symbol$context (\($namespace\))]($style) '
 symbol = "ﴱ "
 style = "bold blue"
 disabled = false
@@ -47,7 +61,7 @@ disabled = false
 "gs-(?P<cluster>.+)" = "$cluster [MC]"
 
 [terraform]
-format = "[$symbol$version]($style) "
+format = "⎮ [$symbol$version]($style) "
 
 [nodejs]
 symbol = " "
@@ -60,7 +74,7 @@ map_symbol = true
 disabled = false
 
 [helm]
-format = "[$symbol$version]($style) "
+format = "⎮ [$symbol$version]($style) "
 symbol = " "
 
 [cmd_duration]
@@ -68,4 +82,8 @@ format = " took [$duration]($style) "
 
 [package]
 symbol = "📦"
-format = "[$symbol$version]($style) "
+format = "⎮ [$symbol$version]($style) "
+
+[jobs]
+number_threshold = 1
+format = "┣ [$symbol $number background jobs\n]($style)"

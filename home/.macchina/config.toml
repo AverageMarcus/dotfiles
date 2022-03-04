@@ -1,0 +1,4 @@
+long_uptime = true
+long_shell = true
+physical_cores = true
+show = [ "Host", "Machine", "OperatingSystem", "Terminal", "Shell", "Uptime" ]
