@@ -1,7 +1,6 @@
 format = """\
   $status\
   $cmd_duration\
-  $line_break\
   $directory\
   $git_branch\
   $git_commit\
@@ -28,7 +27,7 @@ format = "┏   [$path]($style)[$read_only]($read_only_style) "
 
 [character]
 success_symbol = "┗ [✨](yellow)"
-error_symbol = "┗ [✗](red)"
+error_symbol = "┗ [✗](fg:204)"
 
 [git_branch]
 format = "⎮ [$symbol$branch]($style) "
@@ -67,9 +66,8 @@ format = "⎮ [$symbol$version]($style) "
 symbol = " "
 
 [status]
-style = "red"
 symbol = "✗"
-format = '[↪ \[$symbol $common_meaning$signal_name$maybe_int\]]($style)'
+format = "[↪ $symbol $common_meaning$signal_name$maybe_int](fg:204)\n"
 map_symbol = true
 disabled = false
 
@@ -78,7 +76,7 @@ format = "⎮ [$symbol$version]($style) "
 symbol = " "
 
 [cmd_duration]
-format = " took [$duration]($style) "
+format = " took [$duration]($style) \n"
 
 [package]
 symbol = "📦"
