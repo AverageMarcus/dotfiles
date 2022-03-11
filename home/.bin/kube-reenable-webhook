@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+source .utils
+
+set -e
+WEBHOOK_TYPE="mutating"
+
+print_usage() {
+  blue "kube-reenable-webhook - Re-enable a previously disabled webhook"
+  echo " "
+  underline "Usage:"
+  echo "kube-reenable-webhook [options] NAME"
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+  echo "-t, --type            the type of webhook [mutating (default), validating]"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -t|--type)
+      shift
+      WEBHOOK_TYPE=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+NAME=${1}
+
+FAKE_SELECTOR='"namespaceSelector":{"matchExpressions":[{"key":"disabled","operator":"In","values":["webhook"]}]}'
+
+if [[ "${WEBHOOK_TYPE}" == "mutating" ]]; then
+  printf "🔌 Re-enabling mutating webhook ${NAME}..."
+  kubectl get mutatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o custom-columns="prev:.metadata.annotations.previous-state" --no-headers | kubectl apply -f -
+  printf " ✅  Done"
+elif [[ "${WEBHOOK_TYPE}" == "validating" ]]; then
+  printf "🔌 Re-enabling validating webhook ${NAME}..."
+  kubectl get validatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o custom-columns="prev:.metadata.annotations.previous-state" --no-headers | kubectl apply -f -
+  printf " ✅  Done"
+else
+  echo "Unknown webhook type"
+  exit 1
+fi

@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+source .utils
+
+set -e
+WEBHOOK_TYPE="mutating"
+
+print_usage() {
+  blue "kube-disable-webhook - Disabled a webhook by modifying the namespace selector"
+  echo " "
+  underline "Usage:"
+  echo "kube-disable-webhook [options] NAME"
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+  echo "-t, --type            the type of webhook [mutating (default), validating]"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -t|--type)
+      shift
+      WEBHOOK_TYPE=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+NAME=${1}
+
+FAKE_SELECTOR='"namespaceSelector":{"matchExpressions":[{"key":"disabled","operator":"In","values":["webhook"]}]}'
+
+if [[ "${WEBHOOK_TYPE}" == "mutating" ]]; then
+  printf "🚫 Disabling mutating webhook ${NAME}..."
+  kubectl annotate mutatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} previous-state='kubectl get mutatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o json'
+  HOOKS=$(kubectl get mutatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o go-template='{{range .webhooks}}{{.name}}{{"\n"}}{{end}}')
+  for HOOK in ${HOOKS}
+  do
+    kubectl patch mutatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -p '{"webhooks": [{"name": "'${HOOK}'", '${FAKE_SELECTOR}'}]}' 1>/dev/null
+  done
+  printf " ✅  Done"
+elif [[ "${WEBHOOK_TYPE}" == "validating" ]]; then
+  printf "🚫 Disabling validating webhook ${NAME}..."
+  kubectl annotate validatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} previous-state='kubectl get validatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o json'
+  HOOKS=$(kubectl get validatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o go-template='{{range .webhooks}}{{.name}}{{"\n"}}{{end}}')
+  for HOOK in ${HOOKS}
+  do
+    kubectl patch validatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -p '{"webhooks": [{"name": "'${HOOK}'", '${FAKE_SELECTOR}'}]}' 1>/dev/null
+  done
+  printf " ✅  Done"
+else
+  echo "Unknown webhook type"
+  exit 1
+fi
