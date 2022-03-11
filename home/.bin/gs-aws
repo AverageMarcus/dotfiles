@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 
+source .utils
+
 ACCOUNT_ID=${AWS_ACCOUNTID}
 ROLE=GiantSwarmAdmin
 MFA=
 MFA_ARN=arn:aws:iam::${AWS_ACCOUNTID}:mfa/marcus@giantswarm.io
 
 print_usage() {
-  echo "gs-aws - set up AWS credentials"
+  orange "gs-aws - set up AWS credentials"
   echo " "
+  underline "Usage:"
   echo "gs-aws"
   echo " "
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help            show this help text"
   echo "-a, --account         the AWS account number (default: \$AWS_ACCOUNTID)"
   echo "-r, --role            the role to assume (default: GiantSwarmAdmin)"

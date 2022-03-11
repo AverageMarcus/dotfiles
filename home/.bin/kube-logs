@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 
-set -e
+source .utils
 
-NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}' &>/dev/null)"
+set -e
+NAMESPACE=${NAMESPACE:-default}
 POD=""
 ARGS=""
 
 print_usage() {
-  echo "kube-logs - tail logs from a pod"
+  blue "kube-logs - tail logs from a pod"
   echo " "
+  underline "Usage:"
   echo "kube-logs [options]"
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help            show this help text"
   echo "-n, --namespace       the namespace the pod is in"
   echo "-p, --pod             the name of the pod to get logs for"

@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 
+source .utils
+
 set -e
 
 NAMESPACE="org-giantswarm"
 
 print_usage() {
-  echo "gs-get-cluster - get a Giant Swarm managed workload cluster"
+  orange "gs-get-cluster - get a Giant Swarm managed workload cluster"
   echo " "
+  underline "Usage:"
   echo "gs-get-cluster [cluster-name]"
   echo " "
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help            show this help text"
   echo "-n, --namespace       the namespace the cluster is in (default: org-giantswarm)"
 }

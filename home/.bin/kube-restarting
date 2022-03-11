@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 
-set -e
+source .utils
 
-NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}' &>/dev/null)"
+set -e
+NAMESPACE=${NAMESPACE:-default}
 NAMESPACE="-A"
 
 print_usage() {
-  echo "kube-restarting - Show all pods with restarts"
+  blue "kube-restarting - Show all pods with restarts"
   echo " "
+  underline "Usage:"
   echo "kube-restarting [options]"
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help            show this help text"
   echo "-n, --namespace       the namespace the to search in (searches all if not set)"
 }

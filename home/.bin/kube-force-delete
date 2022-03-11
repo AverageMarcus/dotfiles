@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
-set -e
+source .utils
 
-NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}' &>/dev/null)"
+set -e
 NAMESPACE=${NAMESPACE:-default}
 
 print_usage() {
-  echo "kube-force-delete - Force delete resources, even those with finalizers"
+  blue "kube-force-delete - Force delete resources, even those with finalizers"
   echo " "
+  underline "Usage:"
   echo "kube-force-delete [RESOURCE_TYPE] [RESOURCE_NAME]"
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help            show this help text"
   echo "-n, --namespace       the namespace the resource is in (default: current namespace)"
 }

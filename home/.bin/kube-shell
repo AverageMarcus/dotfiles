@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 
-set -e
+source .utils
 
-NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}' &>/dev/null)"
+set -e
+NAMESPACE=${NAMESPACE:-default}
 POD="shell"
 IMAGE="bash"
 CMD="sh"
 
 print_usage() {
-  echo "kube-shell - create a new pod and exec into it's shell"
+  blue "kube-shell - create a new pod and exec into it's shell"
   echo " "
+  underline "Usage:"
   echo "kube-shell [options]"
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help            show this help text"
   echo "-n, --namespace       the namespace the pod should launch in"
   echo "-p, --pod             the name of the pod to get logs for (default: shell)"

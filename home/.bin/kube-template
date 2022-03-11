@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 
-NAMESPACE=""
+source .utils
 
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}' &>/dev/null)"
 set -e
+NAMESPACE=${NAMESPACE:-default}
 
 print_usage() {
-  echo "kube-template - Quickly template up kubernetes resources"
+  blue "kube-template - Quickly template up kubernetes resources"
   echo " "
+  underline "Usage:"
   echo "kube-template [options] RESOURCE_KIND NAME [extra arguments]"
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help            show this help text"
   echo "-n, --namespace       the namespace the to search in"
 }

@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 
+source .utils
+
 NAMESPACE="org-giantswarm"
 RELEASE="20.0.0-alpha1"
 PROVIDER="aws"
 AZS="eu-west-1a"
 
 print_usage() {
-  echo "gs-create-cluster - create a Giant Swarm managed workload cluster"
+  orange "gs-create-cluster - create a Giant Swarm managed workload cluster"
   echo " "
+  underline "Usage:"
   echo "gs-create-cluster [cluster-name]"
   echo " "
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help            show this help text"
   echo "-n, --namespace       the namespace the cluster is in (default: org-giantswarm)"
   echo "-r, --release         the namespace the cluster is in (default: 20.0.0-alpha1)"

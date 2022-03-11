@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 
-set -e
 
-NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+source .utils
+
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}' &>/dev/null)"
+set -e
+NAMESPACE=${NAMESPACE:-default}
 HOST_PORT=10001
 
 print_usage() {
-  echo "kube-forward-all - create port-forwards for all pods in the given namespace"
+  blue "kube-forward-all - create port-forwards for all pods in the given namespace"
   echo " "
+  underline "Usage:"
   echo "kube-forward-all [options]"
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help            show this help text"
   echo "-n, --namespace       the namespace to launch the pod in"
   echo "-p, --port            the port to start at (and increment from for each service) (default: 10001)"

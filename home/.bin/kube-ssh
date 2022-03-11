@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 
-set -e
+source .utils
 
-NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}' &>/dev/null)"
+set -e
 NAMESPACE=${NAMESPACE:-default}
 POD="kube-ssh"
 NODE=""
 
 print_usage() {
-  echo "kube-ssh - gain access to a Kubernetes host node (ssh-like for when a host doesn't have ssh)"
+  blue "kube-ssh - gain access to a Kubernetes host node (ssh-like for when a host doesn't have ssh)"
   echo " "
+  underline "Usage:"
   echo "kube-ssh [options]"
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help            show this help text"
   echo "-n, --namespace       the namespace to launch the pod in"
   echo "-p, --pod             the name of the pod to launch (default: kube-ssh)"

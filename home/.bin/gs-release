@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
+source .utils
+
 set -e
 
 print_usage() {
-  echo "gs-release - create a new release of a Giant Swarm repo"
+  orange "gs-release - create a new release of a Giant Swarm repo"
   echo " "
+  underline "Usage:"
   echo "gs-release [SEMVER LEVEL]"
   echo " "
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help      show this help text"
 }
 

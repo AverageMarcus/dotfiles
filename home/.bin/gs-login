@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 
+source .utils
+
 DEBUG=""
 
 print_usage() {
-  echo "gs-login - login to Giant Swarm managed clusters"
+  orange "gs-login - login to Giant Swarm managed clusters"
   echo " "
+  underline "Usage:"
   echo "gs-login [INSTALLATION] [WORKLOAD CLUSTER] [ORGANISATION]"
   echo " "
-  echo "Examples:"
+  underline "Examples:"
   echo "> gs-login gauss"
   echo "> gs-login gauss mywc1"
   echo " "
-  echo "Options:"
+  underline "Options:"
   echo "-h, --help                show this help text"
 }
 

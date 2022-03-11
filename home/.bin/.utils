@@ -1,0 +1,39 @@
+END_CHARS="\e[0m\n"
+tput colors &>/dev/null
+if [ $? -eq 0 ]; then
+    bold() {
+      printf "\e[1m$@${END_CHARS}"
+    }
+
+    italic() {
+      printf "\e[3m$@${END_CHARS}"
+    }
+
+    underline() {
+      printf "\e[4m$@${END_CHARS}"
+    }
+
+    orange() {
+      printf "\e[38;5;208m$@${END_CHARS}"
+    }
+
+    blue() {
+      printf "\e[38;5;75m$@${END_CHARS}"
+    }
+else
+    bold() {
+      echo $@
+    }
+
+    italic() {
+      echo $@
+    }
+
+    underline() {
+      echo $@
+    }
+
+    orange() {
+      echo $@
+    }
+fi
