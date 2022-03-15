@@ -39,7 +39,7 @@ FAKE_SELECTOR='"namespaceSelector":{"matchExpressions":[{"key":"disabled","opera
 
 if [[ "${WEBHOOK_TYPE}" == "mutating" ]]; then
   printf "🚫 Disabling mutating webhook ${NAME}..."
-  kubectl annotate mutatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} previous-state='kubectl get mutatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o json'
+  kubectl annotate mutatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} previous-state="$(kubectl get mutatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o json)" &>/dev/null
   HOOKS=$(kubectl get mutatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o go-template='{{range .webhooks}}{{.name}}{{"\n"}}{{end}}')
   for HOOK in ${HOOKS}
   do
@@ -48,7 +48,7 @@ if [[ "${WEBHOOK_TYPE}" == "mutating" ]]; then
   printf " ✅  Done"
 elif [[ "${WEBHOOK_TYPE}" == "validating" ]]; then
   printf "🚫 Disabling validating webhook ${NAME}..."
-  kubectl annotate validatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} previous-state='kubectl get validatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o json'
+  kubectl annotate validatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} previous-state="$(kubectl get validatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o json)" &>/dev/null
   HOOKS=$(kubectl get validatingwebhookconfigurations.admissionregistration.k8s.io ${NAME} -o go-template='{{range .webhooks}}{{.name}}{{"\n"}}{{end}}')
   for HOOK in ${HOOKS}
   do
