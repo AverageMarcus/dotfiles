@@ -66,11 +66,3 @@ git() {
   fi
 }
 
-# Giant Swarm specific
-alias prom='opsctl open -a prometheus --sso -i'
-alias happa='opsctl open -a happa --sso -i'
-alias grafana='opsctl open -a grafana --sso -i'
-alias argo='opsctl open -a argocd --sso -i'
-alias cloud-provider='opsctl open -a cloudprovider -i'
-alias get-cluster='gs-get-cluster'
-alias create-cluster='gs-create-cluster'
