@@ -46,14 +46,15 @@ if [ ${#POS_ARGS[@]} -lt 2 ]; then
   exit 1
 fi
 
-printf "⚠️ This could leave cloud resources undeleted if finalizers aren't honoured. ⚠️\n"
+printf "⚠️  This could leave cloud resources undeleted if finalizers aren't honoured ⚠️\n\n"
 printf "Are you sure you want to delete ${POS_ARGS[0]}/${POS_ARGS[1]}? (y/n): "
 read CONFIRM
 
 if [ "${CONFIRM}" = "y" ]; then
+  echo ""
   echo "💣  OK, I hope you know what you're doing..."
-  kubectl patch -p '{"metadata":{"finalizers":null}}' --type=merge -n ${NAMESPACE} ${POS_ARGS[@]}
-  kubectl delete -n ${NAMESPACE} ${POS_ARGS[@]}
+  kubectl patch -p '{"metadata":{"finalizers":null}}' --type=merge -n ${NAMESPACE} ${POS_ARGS[@]} 1>/dev/null
+  kubectl delete -n ${NAMESPACE} ${POS_ARGS[@]} 2>/dev/null || printf ""
 else
   echo "Aborting..."
   exit 1
