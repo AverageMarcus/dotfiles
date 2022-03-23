@@ -24,3 +24,6 @@ export STARSHIP_LOG=error
 # Bat
 export BAT_THEME="Monokai Extended Light"
 export BAT_STYLE="grid,header"
+
+# TZ
+export TZ_LIST="Europe/Berlin;Europe/Sofia;UTC"
