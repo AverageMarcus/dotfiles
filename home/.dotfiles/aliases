@@ -61,6 +61,9 @@ git() {
   elif [ "$1" = "commit" ]; then # Sign all commits
     shift
     _git commit -s $@
+  elif [ "$1" = "co" ]; then # Sign all commits
+    shift
+    _git checkout -b $@
   else
     _git $@
   fi
