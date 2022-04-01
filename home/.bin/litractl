@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+source .utils
+set -e
+
+if [ -z `which hidapitester` ]; then
+  bold "hidapitester command not found"
+  echo "Download from https://github.com/todbot/hidapitester"
+  exit 1
+fi
+
+print_usage() {
+  blue "litractl - Control Litra Glow"
+  echo " "
+  underline "Usage:"
+  echo "litractl [on / off]"
+}
+
+POS_ARGS=()
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      POS_ARGS+=(`echo $1`)
+      shift
+      ;;
+  esac
+done
+
+if [[ "${POS_ARGS[0]}" == "on" ]]; then
+  italic "Turning Litra Glow on... "
+  hidapitester --vidpid 046D/C900 --open --length 20 --send-output 0x11,0xff,0x04,0x1c,0x01 &>/dev/null
+elif [[ "${POS_ARGS[0]}" == "off" ]]; then
+  italic "Turning Litra Glow off... "
+  hidapitester --vidpid 046D/C900 --open --length 20 --send-output 0x11,0xff,0x04,0x1c &>/dev/null
+else
+  print_usage
+fi
