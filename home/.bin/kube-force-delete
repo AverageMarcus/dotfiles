@@ -5,6 +5,7 @@ source .utils
 NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}' &>/dev/null)"
 set -e
 NAMESPACE=${NAMESPACE:-default}
+SELECTOR=""
 
 print_usage() {
   blue "kube-force-delete - Force delete resources, even those with finalizers"
@@ -26,6 +27,11 @@ while test $# -gt 0; do
       NAMESPACE=$1
       shift
       ;;
+    -l|--selector)
+      shift
+      SELECTOR="$1"
+      shift
+      ;;
     -h|--help)
       print_usage
       exit 0
@@ -41,20 +47,41 @@ while test $# -gt 0; do
   esac
 done
 
-if [ ${#POS_ARGS[@]} -lt 2 ]; then
+if [ ${#POS_ARGS[@]} -lt 2 ] && [[ "${SELECTOR}" == "" ]]; then
   echo "Please provide the resource type and name to delete"
   exit 1
 fi
 
+function deleteResource() {
+  echo "Deleting ${1}"
+  kubectl patch -p '{"metadata":{"finalizers":null}}' --type=merge -n ${NAMESPACE} ${1} 1>/dev/null
+  kubectl delete -n ${NAMESPACE} ${1} 2>/dev/null || printf ""
+}
+
 printf "⚠️  This could leave cloud resources undeleted if finalizers aren't honoured ⚠️\n\n"
-printf "Are you sure you want to delete ${POS_ARGS[0]}/${POS_ARGS[1]}? (y/n): "
+
+RESOURCES=()
+
+if [[ "${SELECTOR}" == "" ]]; then
+  printf "Are you sure you want to delete ${POS_ARGS[0]}/${POS_ARGS[1]}? (y/n): "
+  RESOURCES=("${POS_ARGS[0]}/${POS_ARGS[1]}")
+else
+  printf "Are you sure you want to delete all matching '${SELECTOR}'? (y/n): "
+  SELECTOR="-l ${SELECTOR}"
+  NAMES="$(kubectl api-resources --namespaced --verbs list -o name 2>/dev/null | tr '\n' ,)"
+  RESOURCES=$(kubectl get "${NAMES::${#NAMES}-1}" --ignore-not-found ${SELECTOR} -n ${NAMESPACE} -o go-template='{{range.items}}{{.kind}}.{{.apiVersion}}/{{.metadata.name}}{{"\n"}}{{end}}' | tr '[:upper:]' '[:lower:]' | sed -r "s|/(v.+)/|/|g" 2>/dev/null)
+fi
 read CONFIRM
 
 if [ "${CONFIRM}" = "y" ]; then
   echo ""
   echo "💣  OK, I hope you know what you're doing..."
-  kubectl patch -p '{"metadata":{"finalizers":null}}' --type=merge -n ${NAMESPACE} ${POS_ARGS[@]} 1>/dev/null
-  kubectl delete -n ${NAMESPACE} ${POS_ARGS[@]} 2>/dev/null || printf ""
+  IFS='
+'
+  for RESOURCE in ${RESOURCES}
+  do
+    deleteResource ${RESOURCE}
+  done
 else
   echo "Aborting..."
   exit 1
