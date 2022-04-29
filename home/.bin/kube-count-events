@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+source .utils
+
+set -e
+
+print_usage() {
+  blue "kube-count-events - Counts events by type"
+  echo " "
+  underline "Usage:"
+  echo "kube-count-events [options]"
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+kubectl get events -A | awk '{ print $4 }' | sort | uniq -c | sort -bgr
