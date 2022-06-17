@@ -2,13 +2,15 @@
 
 source .utils
 
+DRY_RUN=0
 NAMESPACE="org-giantswarm"
 RELEASE="20.0.0-alpha1"
 PROVIDER="aws"
 AZS="eu-west-1a"
+DESCRIPTION="$(whoami)'s test cluster"
 
 print_usage() {
-  orange "gs-create-cluster - create a Giant Swarm managed workload cluster"
+  orange "gs-create-cluster - create a Giant Swarm managed CAPI workload cluster"
   echo " "
   underline "Usage:"
   echo "gs-create-cluster [cluster-name]"
@@ -38,6 +40,10 @@ while test $# -gt 0; do
       PROVIDER=$1
       shift
       ;;
+    --dry-run)
+      DRY_RUN=1
+      shift
+      ;;
     -h|--help)
       print_usage
       exit 0
@@ -57,21 +63,46 @@ case $NAMESPACE in org-*)
   NAMESPACE=${NAMESPACE#"org-"}
 esac
 
+CAPI_CLUSTER="--provider aws --release ${RELEASE}"
+CAPZ_CLUSTER="--provider azure --release ${RELEASE}"
+CAPG_CLUSTER="--provider gcp --project capi-test-phoenix --region europe-west3 --gcp-failure-domains europe-west3-a --gcp-machine-deployment-failure-domain europe-west3-a"
+TEMPLATE_ARGS="--name ${NAME:0:5} --organization ${NAMESPACE}"
+case "${PROVIDER}" in
+  aws)
+    TEMPLATE_ARGS="${TEMPLATE_ARGS} ${CAPI_CLUSTER}"
+    ;;
+  gcp)
+    TEMPLATE_ARGS="${TEMPLATE_ARGS} ${CAPG_CLUSTER}"
+    ;;
+  azure)
+    TEMPLATE_ARGS="${TEMPLATE_ARGS} ${CAPZ_CLUSTER}"
+    ;;
+  *)
+    echo "Unsupported provider type"
+    exit 1
+    ;;
+esac
+
 echo "✨  Pre-flight checks"
 gs-get-cluster --namespace ${PREFIXED_NAMESPACE} ${NAME} &>/dev/null
 if [ $? -eq 0 ]; then
   echo "Cluster named '${NAME}' already exists"
   exit 1
-else
+elif [[ "${PROVIDER}" = "aws" ]]; then
   echo "Cleaning up any old awsclusterroleidentities..."
   kubectl delete --namespace ${PREFIXED_NAMESPACE} awsclusterroleidentities ${NAME} 2>/dev/null
 fi
 
-echo "✨  Creating an ${PROVIDER} cluster called '${NAMESPACE}/${NAME}' with release '${RELEASE}'"
-kubectl-gs template cluster --provider ${PROVIDER} --release ${RELEASE} --organization ${NAMESPACE} --name ${NAME} --description "$(whoami)'s test cluster" | kubectl apply -f -
+echo "✨  Creating a new ${PROVIDER} cluster called '${NAMESPACE}/${NAME}' with release '${RELEASE}'"
+if [[ $DRY_RUN = 1 ]]; then
+  echo kubectl-gs template cluster ${TEMPLATE_ARGS} --description "${DESCRIPTION}"
+  kubectl-gs template cluster ${TEMPLATE_ARGS} --description "${DESCRIPTION}"
+else
+  kubectl-gs template cluster ${TEMPLATE_ARGS} --description "${DESCRIPTION}" | kubectl apply -f -
+fi
 
-echo "✨  Adding node pool to cluster"
-kubectl-gs template nodepool --provider ${PROVIDER} --release ${RELEASE} --organization ${NAMESPACE} --cluster-name ${NAME} --description "$(whoami)'s test cluster" --availability-zones ${AZS} | kubectl apply -f -
-
-echo "✨  Checking status..."
-gs-get-cluster --namespace ${PREFIXED_NAMESPACE} ${NAME}
+if [[ $DRY_RUN = 0 ]]; then
+  sleep 10
+  echo "✨  Checking status..."
+  gs-get-cluster --namespace ${PREFIXED_NAMESPACE} ${NAME}
+fi
