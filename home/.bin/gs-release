@@ -96,14 +96,17 @@ printf "Confirm? (y/n): "
 read CONFIRM
 
 if [ "${CONFIRM}" = "y" ]; then
+  echo ""
   echo "Publishing new release branch..."
+  echo ""
   git checkout -b "${NEW_BRANCH}"
   git push -u origin "${NEW_BRANCH}"
 
   ORG_NAME=$(git remote get-url origin | sed 's/.*github.com[:|\/]//' | sed 's/\.git$//' | tr '/' ' ' | awk '{print $1}')
   REPO_NAME=$(git remote get-url origin | sed 's/.*github.com[:|\/]//' | sed 's/\.git$//' | tr '/' ' ' | awk '{print $2}')
 
-  echo "🚀  Keep an eye on https://github.com/${ORG_NAME}/${REPO_NAME}/pulls for the new release PR"
+  echo ""
+  echo "🚀  Keep an eye on $(underline "https://github.com/${ORG_NAME}/${REPO_NAME}/pulls") for the new release PR"
 else
   echo "Aborting..."
   exit 1
