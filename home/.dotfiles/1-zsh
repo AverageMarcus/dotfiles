@@ -54,3 +54,5 @@ preexec() {
   if overridden; then return; fi
   printf "\033]0;%s\a" "${1%% *} | $cwd" # Omit construct from $1 to show args
 }
+
+eval "$(ssh-agent -s)" > /dev/null
