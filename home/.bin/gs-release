@@ -107,6 +107,11 @@ if [ "${CONFIRM}" = "y" ]; then
 
   echo ""
   echo "🚀  Keep an eye on $(underline "https://github.com/${ORG_NAME}/${REPO_NAME}/pulls") for the new release PR"
+  echo ""
+
+  echo "Switching back to the main git branch"
+  git checkout $(git remote show origin 2>/dev/null|grep HEAD|sed 's/.* //') &> /dev/null
+  git pull &> /dev/null
 else
   echo "Aborting..."
   exit 1
