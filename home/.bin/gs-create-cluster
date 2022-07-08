@@ -65,7 +65,7 @@ esac
 
 CAPI_CLUSTER="--provider aws --release ${RELEASE}"
 CAPZ_CLUSTER="--provider azure --release ${RELEASE}"
-CAPG_CLUSTER="--provider gcp --project capi-test-phoenix --region europe-west3 --gcp-failure-domains europe-west3-a --gcp-machine-deployment-failure-domain europe-west3-a"
+CAPG_CLUSTER="--provider gcp --gcp-project giantswarm-352614 --region europe-west3 --gcp-failure-domains europe-west3-a --gcp-machine-deployment-failure-domain europe-west3-a"
 TEMPLATE_ARGS="--name ${NAME:0:5} --organization ${NAMESPACE}"
 case "${PROVIDER}" in
   aws)
