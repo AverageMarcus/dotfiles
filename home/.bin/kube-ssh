@@ -66,29 +66,7 @@ if [[ "$NODE" == "" ]]; then
   fi
 fi
 
-
 NODE_NAME=$(kubectl get node $NODE -o template --template='{{index .metadata.labels "kubernetes.io/hostname"}}')
 NODE_SELECTOR='"nodeSelector": { "kubernetes.io/hostname": "'${NODE_NAME}'" },'
 
-kubectl run --namespace ${NAMESPACE} $POD --restart=Never -it --rm --image overriden --overrides '
-{
-  "spec": {
-    "hostPID": true,
-    "hostNetwork": true,
-    '"${NODE_SELECTOR}"'
-    "tolerations": [{
-      "operator": "Exists"
-    }],
-    "containers": [
-      {
-        "name": "kube-ssh",
-        "image": "averagemarcus/kube-ssh:latest",
-        "stdin": true,
-        "tty": true,
-        "securityContext": {
-          "privileged": true
-        }
-      }
-    ]
-  }
-}' --attach
+kubectl run --namespace ${NAMESPACE} $POD --rm -it --image alpine --privileged --overrides '{"spec":{'"${NODE_SELECTOR}"'"hostPID": true}}' --command nsenter -- --mount=/proc/1/ns/mnt -- /bin/bash
