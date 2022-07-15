@@ -64,6 +64,8 @@ if [ -z $MFA ] || [ -z $MFA_ARN ]; then
   exit 1
 fi
 
+unset AWS_PROFILE
+
 printf "✨  Getting session credentials..."
 SESSION_JSON=$(aws sts get-session-token --serial-number ${MFA_ARN} --token-code ${MFA})
 printf "\n\e[1A\e[K✅  Got session credentials\n"
