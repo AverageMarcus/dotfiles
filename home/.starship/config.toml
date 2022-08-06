@@ -1,6 +1,7 @@
 format = """\
   $status\
   $cmd_duration\
+  $hostname\
   $directory\
   $git_branch\
   $git_commit\
@@ -21,6 +22,11 @@ format = """\
 
 command_timeout = 1000
 add_newline = true
+
+[hostname]
+ssh_only = true
+format = "🌐 [$hostname](bold dimmed blue) \n"
+disabled = false
 
 [directory]
 format = "┏   [$path]($style)[$read_only]($read_only_style) "
