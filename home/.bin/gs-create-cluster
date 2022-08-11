@@ -63,13 +63,13 @@ case $NAMESPACE in org-*)
   NAMESPACE=${NAMESPACE#"org-"}
 esac
 
-CAPI_CLUSTER="--provider aws --release ${RELEASE}"
+CAPA_CLUSTER="--provider aws --release ${RELEASE}"
 CAPZ_CLUSTER="--provider azure --release ${RELEASE}"
 CAPG_CLUSTER="--provider gcp --gcp-project giantswarm-352614 --region europe-west3 --gcp-failure-domains europe-west3-a --gcp-machine-deployment-failure-domain europe-west3-a"
 TEMPLATE_ARGS="--name ${NAME:0:5} --organization ${NAMESPACE}"
 case "${PROVIDER}" in
   aws)
-    TEMPLATE_ARGS="${TEMPLATE_ARGS} ${CAPI_CLUSTER}"
+    TEMPLATE_ARGS="${TEMPLATE_ARGS} ${CAPA_CLUSTER}"
     ;;
   gcp)
     TEMPLATE_ARGS="${TEMPLATE_ARGS} ${CAPG_CLUSTER}"
