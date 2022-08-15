@@ -30,7 +30,7 @@ BREW_TOOLS=(
   kubectl kubectx kustomize node procs progress ripgrep rs/tap/curlie rust starship
   tektoncd/tools/tektoncd-cli tldr tailscale yq hashicorp/tap/vault stats
   tabby vale lastpass-cli jless macchina tz vmware-tanzu/carvel/kapp viddy
-  homeassistant-cli
+  homeassistant-cli act dnsmasq
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
@@ -118,6 +118,16 @@ case "${OSTYPE}" in
     dst="/Users/${USER}/Library/Application Support/tabby/config.yaml"
     printf "Linking ${f}=>${dst}"
     ln -sfn ${f} ${dst}
+    printf " ✅\n"
+
+    # 2. dnsmasq
+    f=$(fulllink "./other-files/dnsmasq/dnsmasq.conf")
+    dst="$(brew --prefix)/etc/dnsmasq.conf"
+    printf "Copying ${f}=>${dst}"
+    cp ${f} ${dst}
+    printf " ✅\n"
+    printf "Setting DNS server for 'Wi-Fi' interface to use dnsmasq"
+    sudo networksetup -setdnsservers "Wi-Fi" 127.0.0.1
     printf " ✅\n"
 
     ;;
