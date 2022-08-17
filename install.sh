@@ -30,7 +30,7 @@ BREW_TOOLS=(
   kubectl kubectx kustomize node procs progress ripgrep rs/tap/curlie rust starship
   tektoncd/tools/tektoncd-cli tldr tailscale yq hashicorp/tap/vault stats
   tabby vale lastpass-cli jless macchina tz vmware-tanzu/carvel/kapp viddy
-  homeassistant-cli act dnsmasq gh
+  homeassistant-cli act dnsmasq gh kubebuilder
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )

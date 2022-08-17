@@ -4,6 +4,7 @@ source .utils
 
 TEMPLATE="giantswarm/template-app"
 VISIBILITY="public"
+CODEOWNER_TEAM="team-hydra"
 
 print_usage() {
   orange "gs-create-repo - a new Giant Swarm repo"
@@ -15,6 +16,7 @@ print_usage() {
   underline "Options:"
   echo "-h, --help            show this help text"
   echo "-t, --template        the template repo to base the new repo on (default: ${TEMPLATE})"
+  echo "    --team            the team to be set as codeowner of the repo (default: ${CODEOWNER_TEAM})"
   echo "    --visibility      the visibility of the repo (default: ${VISIBILITY}"
 }
 
@@ -53,7 +55,10 @@ esac
 
 REPOSITORY_NAME=${POS_ARGS[0]}
 
+#############################################
+
 echo "✨ Creating new repo $(italic ${VISIBILITY}) $(orange ${REPOSITORY_NAME}) using base template $(blue ${TEMPLATE})"
+
 gh repo create --${VISIBILITY} --template ${TEMPLATE} giantswarm/${REPOSITORY_NAME}
 
 if [ -d helm/APP-NAME ]; then
@@ -62,8 +67,106 @@ fi
 
 devctl replace -i '{APP-NAME}' ${REPOSITORY_NAME} --ignore .git ./.** ./**
 
+# Clean up some stuff
+sed -i '' 's|\[Read me after cloning this template (GS staff only)\](https://intranet.giantswarm.io/docs/dev-and-releng/app-developer-processes/adding_app_to_appcatalog/)||g' README.md
+sed -i '' 's|- {APP HELM REPOSITORY}||g' README.md
+sed -i '' '$!N; /^\(.*\)\n\1$/!P; D' README.md
+sed -i '' 's/- .*//' CHANGELOG.md
+sed -i '' '$!N; /^\(.*\)\n\1$/!P; D' CHANGELOG.md
+
+
+printf "Run Kubebuilder init? (y/n): "
+read CONFIRM
+if [ "${CONFIRM}" = "y" ]; then
+  mv helm .helm
+  kubebuilder init --domain giantswarm.io --repo github.com/giantswarm/${REPOSITORY_NAME} --plugins=go/v4-alpha
+  mv .helm helm
+  mv Makefile Makefile.kubebuilder.mk
+  go mod tidy
+fi
+
+devctl gen workflows --flavour app --flavour generic --check-secrets
+devctl gen makefile --flavour app --flavour generic --language go
+touch Makefile.custom.mk
+
+printf "Update Circle-CI job? (y/n): "
+read CONFIRM
+if [ "${CONFIRM}" = "y" ]; then
+
+  cat << EOF > .circleci/config.yml
+version: 2.1
+orbs:
+  architect: giantswarm/architect@4.24.0
+
+workflows:
+  test-and-push:
+    jobs:
+      - architect/go-build:
+          context: architect
+          name: go-build
+          binary: ${REPOSITORY_NAME}
+          resource_class: xlarge
+          filters:
+            tags:
+              only: /^v.*/
+      - architect/push-to-docker:
+          context: architect
+          name: push-${REPOSITORY_NAME}-to-quay
+          image: "quay.io/giantswarm/${REPOSITORY_NAME}"
+          username_envar: "QUAY_USERNAME"
+          password_envar: "QUAY_PASSWORD"
+          requires:
+          - go-build
+          filters:
+            # Trigger the job also on git tag.
+            tags:
+              only: /^v.*/
+      - architect/push-to-docker:
+          context: "architect"
+          name: push-${REPOSITORY_NAME}-to-docker
+          image: "docker.io/giantswarm/${REPOSITORY_NAME}"
+          username_envar: "DOCKER_USERNAME"
+          password_envar: "DOCKER_PASSWORD"
+          requires:
+            - go-build
+          # Needed to trigger job also on git tag.
+          filters:
+            tags:
+              only: /^v.*/
+                k
+    # Ensure that for every commit
+    # there is an app version in the test catalog.
+      - architect/push-to-app-catalog:
+          context: architect
+          name: push-to-app-catalog
+          app_catalog: "control-plane-catalog"
+          app_catalog_test: "control-plane-test-catalog"
+          chart: "${REPOSITORY_NAME}"
+          requires:
+          - push-${REPOSITORY_NAME}-to-quay
+          - push-${REPOSITORY_NAME}-to-docker
+          filters:
+            # Trigger the job also on git tag.
+            tags:
+              only: /^v.*/
+      - architect/push-to-app-collection:
+          context: architect
+          name: push-to-gcp-app-collection
+          app_name: "${REPOSITORY_NAME}"
+          app_collection_repo: "gcp-app-collection"
+          requires:
+          - push-to-app-catalog
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+EOF
+
+fi
+
 git add -A
-git commit -m "rename APP-NAME placeholder to ${REPOSITORY_NAME}"
+git commit -m "Initial repo scaffold and setup"
 git push
 
 devctl repo setup giantswarm/${REPOSITORY_NAME} \
@@ -72,3 +175,13 @@ devctl repo setup giantswarm/${REPOSITORY_NAME} \
   --enable-issues=true --enable-projects=false --enable-wiki=false
 
 echo "🎉 New repo $(orange ${REPOSITORY_NAME}) created! - https://github.com/giantswarm/${REPOSITORY_NAME}"
+
+echo "⚡️ Adding reference to $(orange ${REPOSITORY_NAME}) in giantswarm/github"
+git take git@github.com:giantswarm/github.git
+git main
+yq -i '. += {"name": "'${REPOSITORY_NAME}'", "gen": {"flavour": "app,generic", "language": "go"}, "replace": {"architect-orb": true, "renovate": true}} | sort_by(.name)' repositories/${CODEOWNER_TEAM}.yaml
+git add repositories/${CODEOWNER_TEAM}.yaml
+git commit -m "Added ${REPOSITORY_NAME} to ${CODEOWNER_TEAM} repos"
+git push
+
+cd -
