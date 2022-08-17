@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+source .utils
+
+TEMPLATE="giantswarm/template-app"
+VISIBILITY="public"
+
+print_usage() {
+  orange "gs-create-repo - a new Giant Swarm repo"
+  echo " "
+  underline "Usage:"
+  echo "gs-create-repo (flags) [repo-name]"
+  echo " "
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+  echo "-t, --template        the template repo to base the new repo on (default: ${TEMPLATE})"
+  echo "    --visibility      the visibility of the repo (default: ${VISIBILITY}"
+}
+
+
+POS_ARGS=()
+while test $# -gt 0; do
+  case "$1" in
+    -t|--template)
+      shift
+      TEMPLATE=$1
+      shift
+      ;;
+    -p|--private)
+      shift
+      PRIVATE="--private"
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      POS_ARGS+=${1}
+      shift
+      ;;
+  esac
+done
+
+case $TEMPLATE in
+  */*)
+    shift
+    ;;
+  *)
+    TEMPLATE="giantswarm/${TEMPLATE}"
+    ;;
+esac
+
+REPOSITORY_NAME=${POS_ARGS[0]}
+
+echo "✨ Creating new repo $(italic ${VISIBILITY}) $(orange ${REPOSITORY_NAME}) using base template $(blue ${TEMPLATE})"
+gh repo create --${VISIBILITY} --template ${TEMPLATE} giantswarm/${REPOSITORY_NAME}
+
+if [ -d helm/APP-NAME ]; then
+  mv helm/APP-NAME helm/${REPOSITORY_NAME}
+fi
+
+devctl replace -i '{APP-NAME}' ${REPOSITORY_NAME} --ignore .git ./.** ./**
+
+git add -A
+git commit -m "rename APP-NAME placeholder to ${REPOSITORY_NAME}"
+git push
+
+devctl repo setup giantswarm/${REPOSITORY_NAME} \
+  --allow-automerge=true --allow-mergecommit=false --allow-rebasemerge=false \
+  --allow-squashmerge=true --allow-updatebranch=true --delete-branch-on-merge=true \
+  --enable-issues=true --enable-projects=false --enable-wiki=false
+
+echo "🎉 New repo $(orange ${REPOSITORY_NAME}) created! - https://github.com/giantswarm/${REPOSITORY_NAME}"
