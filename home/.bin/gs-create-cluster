@@ -63,7 +63,7 @@ case $NAMESPACE in org-*)
   NAMESPACE=${NAMESPACE#"org-"}
 esac
 
-CAPA_CLUSTER="--provider aws --release ${RELEASE}"
+CAPA_CLUSTER="--provider capa"
 CAPZ_CLUSTER="--provider azure --release ${RELEASE}"
 CAPG_CLUSTER="--provider gcp --gcp-project giantswarm-352614 --region europe-west3 --gcp-failure-domains europe-west3-a --gcp-machine-deployment-failure-domain europe-west3-a"
 TEMPLATE_ARGS="--name ${NAME:0:5} --organization ${NAMESPACE}"
