@@ -9,6 +9,7 @@ GITEMAIL=$(git config --get user.email)
 
 # Install homebrew
 which brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew tap homebrew/core
 
 echo "🔵  Setting up zsh"
 
@@ -23,6 +24,9 @@ printf "Cloning zsh plugins..."
 [ -d ${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 printf " ✅\n"
 
+# Set correct permissions on compinit dir
+sudo chmod -R 755 /usr/local/share/zsh/site-functions
+
 # Install tools
 BREW_TOOLS=(
   argocd bandwhich bat danielfoehrkn/switch/switch derailed/k9s/k9s dive doggo duf dust exa fd fzf
@@ -35,9 +39,15 @@ BREW_TOOLS=(
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
 KREW_TOOLS=( gs outdated tree stern )
-APT_TOOLS=( zsh )
+APT_TOOLS=( zsh gcc )
 
 echo "🔵  Installing / updating tools"
+
+# Install Debian/Ubuntu specific packages if apt exists
+if command -v apt &>/dev/null; then
+  echo "`apt` found on system, assuming Ubuntu/Debian and installing pre-requisites..."
+  sudo apt install -y ${APT_TOOLS}
+fi
 
 # Homebrew
 export HOMEBREW_NO_INSTALL_CLEANUP=true
@@ -91,12 +101,7 @@ echo "Detected OS type: ${OSTYPE}"
 
 case "${OSTYPE}" in
   *linux*)
-    # Install Debian/Ubuntu specific packages
-    if command -v apt &>/dev/null; then
-      sudo apt install -y ${APT_TOOLS}
-    fi
-    # Set correct permissions on compinit dir
-    sudo chmod -R 755 /usr/local/share/zsh/site-functions
+    # Do stuff
     ;;
   *darwin*)
     # Mac specific setup
