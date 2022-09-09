@@ -45,7 +45,7 @@ echo "🔵  Installing / updating tools"
 
 # Install Debian/Ubuntu specific packages if apt exists
 if command -v apt &>/dev/null; then
-  echo "`apt` found on system, assuming Ubuntu/Debian and installing pre-requisites..."
+  echo "'apt' found on system, assuming Ubuntu/Debian and installing pre-requisites..."
   sudo apt install -y ${APT_TOOLS}
 fi
 
