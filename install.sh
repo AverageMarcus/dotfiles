@@ -35,6 +35,7 @@ BREW_TOOLS=(
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
 KREW_TOOLS=( gs outdated tree stern )
+APT_TOOLS=( zsh )
 
 echo "🔵  Installing / updating tools"
 
@@ -44,7 +45,11 @@ for tool in "${BREW_TOOLS[@]}"
 do
   printf "${tool}..."
   brew upgrade ${tool} &>/dev/null || brew install ${tool} &>/dev/null
-  printf " ✅\n"
+  if [ $? -eq 0 ]; then
+    printf " ✅\n"
+  else
+    printf " ❌\n"
+  fi
 done
 
 # Cargo
@@ -52,7 +57,11 @@ for tool in "${CARGO_TOOLS[@]}"
 do
   printf "${tool}..."
   cargo install ${tool} &>/dev/null
-  printf " ✅\n"
+  if [ $? -eq 0 ]; then
+    printf " ✅\n"
+  else
+    printf " ❌\n"
+  fi
 done
 
 # Krew
@@ -61,7 +70,11 @@ for tool in "${KREW_TOOLS[@]}"
 do
   printf "${tool}..."
   kubectl-krew upgrade ${tool} &>/dev/null || kubectl-krew install ${tool} &>/dev/null
-  printf " ✅\n"
+  if [ $? -eq 0 ]; then
+    printf " ✅\n"
+  else
+    printf " ❌\n"
+  fi
 done
 
 fulllink() {
@@ -78,7 +91,12 @@ echo "Detected OS type: ${OSTYPE}"
 
 case "${OSTYPE}" in
   *linux*)
-    # Do stuff
+    # Install Debian/Ubuntu specific packages
+    if command -v apt &>/dev/null; then
+      sudo apt install -y ${APT_TOOLS}
+    fi
+    # Set correct permissions on compinit dir
+    sudo chmod -R 755 /usr/local/share/zsh/site-functions
     ;;
   *darwin*)
     # Mac specific setup
@@ -87,7 +105,11 @@ case "${OSTYPE}" in
     do
       printf "${tool}..."
       brew upgrade ${tool} &>/dev/null || brew install ${tool} &>/dev/null
-      printf " ✅\n"
+      if [ $? -eq 0 ]; then
+        printf " ✅\n"
+      else
+        printf " ❌\n"
+      fi
     done
 
 
