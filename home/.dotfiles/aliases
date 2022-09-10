@@ -10,8 +10,11 @@ alias _find=`which find`
 alias _top=`which top`
 alias _ps="/bin/ps"
 alias _dig=`which dig`
-alias _git=`which git`
 alias _readlink=`which readlink`
+alias _git=`which git`
+if command -v $(brew --prefix)/bin/git &>/dev/null; then
+  alias _git=$(brew --prefix)/bin/git
+fi
 
 # Aliases
 alias cat='bat '

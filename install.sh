@@ -29,8 +29,8 @@ sudo chmod -R 755 /usr/local/share/zsh/site-functions
 
 # Install tools
 BREW_TOOLS=(
-  argocd bandwhich bat danielfoehrkn/switch/switch derailed/k9s/k9s dive doggo duf dust exa fd fzf
-  git-delta go helm htop jq kind krew
+  git argocd bandwhich bat danielfoehrkn/switch/switch derailed/k9s/k9s
+  dive doggo duf dust exa fd fzf git-delta go helm htop jq kind krew
   kubectl kubectx kustomize node procs progress ripgrep rs/tap/curlie rust starship
   tektoncd/tools/tektoncd-cli tldr tailscale yq hashicorp/tap/vault
   tabby vale lastpass-cli jless macchina tz vmware-tanzu/carvel/kapp viddy
