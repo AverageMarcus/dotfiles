@@ -37,7 +37,10 @@ BREW_TOOLS=(
   homeassistant-cli act dnsmasq gh kubebuilder golangci-lint
   )
 # Brew tools only available / needed on Mac
-MAC_BREW_TOOLS=( pinentry-mac gpg gawk coreutils wget stats homebrew/cask-fonts/font-open-dyslexic-nerd-font )
+MAC_BREW_TOOLS=(
+  pinentry-mac gpg gawk coreutils wget stats homebrew/cask-fonts/font-open-dyslexic-nerd-font
+  keepingyouawake hiddenbar
+  )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
 KREW_TOOLS=( gs outdated tree stern )
