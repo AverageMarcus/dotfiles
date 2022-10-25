@@ -53,9 +53,10 @@ if [ ${#POS_ARGS[@]} -lt 2 ] && [[ "${SELECTOR}" == "" ]]; then
 fi
 
 function deleteResource() {
-  echo "Deleting ${1}"
-  kubectl patch -p '{"metadata":{"finalizers":null}}' --type=merge -n ${NAMESPACE} ${1} 1>/dev/null|| printf ""
-  kubectl delete -n ${NAMESPACE} ${1} 2>/dev/null || printf ""
+  RES="${1//.v1/}"
+  echo "Deleting ${RES}"
+  kubectl patch -p '{"metadata":{"finalizers":null}}' --type=merge -n ${NAMESPACE} ${RES} 1>/dev/null|| printf ""
+  kubectl delete -n ${NAMESPACE} ${RES} 2>/dev/null || printf ""
 }
 
 printf "⚠️  This could leave cloud resources undeleted if finalizers aren't honoured ⚠️\n\n"
