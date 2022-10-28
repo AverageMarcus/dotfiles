@@ -11,6 +11,7 @@ alias _top=`which top`
 alias _ps="/bin/ps"
 alias _dig=`which dig`
 alias _readlink=`which readlink`
+alias _sed=`which sed`
 alias _git=`which git`
 if command -v $(brew --prefix)/bin/git &>/dev/null; then
   alias _git=$(brew --prefix)/bin/git
@@ -35,6 +36,7 @@ alias kctx='switch'
 alias machine-info='macchina -t Boron --bar'
 alias watch='watch '
 alias tmp='cd $(mktemp -d)'
+alias sed='gsed'
 which greadlink &>/dev/null && alias readlink=`which greadlink`
 
 lt() {

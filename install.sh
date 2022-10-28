@@ -34,7 +34,7 @@ BREW_TOOLS=(
   kubectl kubectx kustomize node procs progress ripgrep rs/tap/curlie rust starship
   tektoncd/tools/tektoncd-cli tldr tailscale yq hashicorp/tap/vault
   tabby vale lastpass-cli jless macchina tz vmware-tanzu/carvel/kapp viddy
-  homeassistant-cli act dnsmasq gh kubebuilder golangci-lint
+  homeassistant-cli act dnsmasq gh kubebuilder golangci-lint gnu-sed
   )
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
