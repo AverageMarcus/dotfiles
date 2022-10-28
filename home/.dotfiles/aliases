@@ -13,6 +13,7 @@ alias _dig=`which dig`
 alias _readlink='/usr/bin/readlink'
 alias _sed='/usr/bin/sed'
 alias _date='/bin/date'
+alias _base64='/usr/bin/base64'
 alias _git=`which git`
 if command -v $(brew --prefix)/bin/git &>/dev/null; then
   alias _git=$(brew --prefix)/bin/git
@@ -42,6 +43,7 @@ alias tmp='cd $(mktemp -d)'
 which greadlink &>/dev/null && ln -sfn `which greadlink` ~/.bin/readlink
 which gsed &>/dev/null && ln -sfn `which gsed` ~/.bin/sed
 which gdate &>/dev/null && ln -sfn `which gdate` ~/.bin/date
+which gbase64 &>/dev/null && ln -sfn `which gbase64` ~/.bin/base64
 
 lt() {
   DEPTH=$(echo $1 | grep "^[0-9]*$")
