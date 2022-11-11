@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+source .utils
+
+set -e
+
+print_usage() {
+  blue "flux-resume-all - Resume all flux resources"
+  echo " "
+  underline "Usage:"
+  echo "flux-resume-all [options]"
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+
+KUSTOMIZATIONS=$(kubectl get kustomization -A -o json | jq -r '.items[] | select(.spec.suspend==true) | "\(.metadata.namespace)/\( .kind)/\( .metadata.name)"')
+GITREPOS=$(kubectl get gitrepo -A -o json | jq -r '.items[] | select(.spec.suspend==true) | "\(.metadata.namespace)/\( .kind)/\( .metadata.name)"')
+
+if [[ "${KUSTOMIZATIONS}" == "" ]] && [[ "${GITREPOS}" == "" ]]; then
+  italic "Nothing to resume"
+fi
+
+for RESOURCE in ${KUSTOMIZATIONS} ${GITREPOS}
+do
+  PARTS=($(echo ${RESOURCE} | tr '[:upper:]' '[:lower:]' | tr "/" "\n"))
+  blue "Resuming ${PARTS[1]} - ${PARTS[0]}/${PARTS[2]}"
+  kubectl patch ${PARTS[1]} -n ${PARTS[0]} ${PARTS[2]} -p '{"spec":{"suspend":null}}' --type merge
+done
+

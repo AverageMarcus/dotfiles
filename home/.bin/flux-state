@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+source .utils
+
+set -e
+
+print_usage() {
+  blue "flux-state - Check if any Flux resources are suspended"
+  echo " "
+  underline "Usage:"
+  echo "flux-state [options]"
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+blue "'kustomization' resources:"
+KUSTOMIZATIONS=$(kubectl get kustomization -A -o json)
+echo ${KUSTOMIZATIONS} | jq -r '.items[] | select(.spec.suspend==true) | "\(.metadata.namespace)/\( .metadata.name) - ⚠️Suspended"' | column -t
+echo ${KUSTOMIZATIONS} | jq -r '.items[] | select(.spec.suspend!=true) | "\(.metadata.namespace)/\( .metadata.name) - ⚡️Active"' | column -t
+echo ""
+blue "'gitrepo' resources:"
+GITREPOS=$(kubectl get gitrepo -A -o json)
+echo ${GITREPOS} | jq -r '.items[] | select(.spec.suspend==true) | "\(.metadata.namespace)/\( .metadata.name) - ⚠️Suspended"' | column -t
+echo ${GITREPOS} | jq -r '.items[] | select(.spec.suspend!=true) | "\(.metadata.namespace)/\( .metadata.name) - ⚡️Active"' | column -t
