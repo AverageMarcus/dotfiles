@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+source .utils
+
+NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}' &>/dev/null)"
+set -e
+NAMESPACE=${NAMESPACE:-default}
+DEPLOYMENT=""
+
+print_usage() {
+  blue "kube-schedule-anywhere - modify a deployment to schedule on any node"
+  echo " "
+  underline "Usage:"
+  echo "kube-schedule-anywhere [options]"
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --namespace       the namespace the pod is in"
+  echo "-d, --deployment      the name of the deployment to modify"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE=$1
+      shift
+      ;;
+    -d|--deployment)
+      shift
+      DEPLOYMENT=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+
+if [[ "$DEPLOYMENT" == "" ]]; then
+  which fzf &>/dev/null || (
+    echo "If no deployment provided, fzf is required to select deployments"
+    echo ""
+    print_usage
+    exit 1
+  )
+
+  deployment=($(kubectl get deployments --all-namespaces -owide | fzf | awk '{print $1, $2}'))
+  DEPLOYMENT=$deployment[1]
+  NAMESPACE=$pod[0]
+fi
+
+kubectl patch deployment -n ${NAMESPACE} ${DEPLOYMENT} -p '{"spec": { "template": { "spec": { "tolerations": [ { "operator": "Exists" } ] } } } }' 1>/dev/null
