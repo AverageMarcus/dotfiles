@@ -3,6 +3,7 @@ export VISUAL='code'
 export GPG_TTY=$(tty)
 
 # AWS
+export AWS_PAGER=""
 if [ -f ~/.aws/profile ]; then
   export AWS_PROFILE=$(cat ~/.aws/profile)
   export AWS_DEFAULT_REGION=eu-west-1
