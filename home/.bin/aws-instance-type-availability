@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+source .utils
+
+REGIONS=( $(aws ec2 describe-regions --region eu-west-1 | jq -r '.Regions[].RegionName') )
+INSTANCE_TYPES=()
+
+print_usage() {
+  orange "aws-instance-type-availability - check EC2 instance type availability in all regions"
+  echo " "
+  underline "Usage:"
+  echo "aws-instance-type-availability [instance type IDs]"
+  echo " "
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      INSTANCE_TYPES+=${1}
+      break
+      ;;
+  esac
+done
+
+for INSTANCE in "${INSTANCE_TYPES[@]}"; do
+  blue "${INSTANCE} availability:"
+  for REGION in "${REGIONS[@]}"; do
+    aws ec2 describe-instance-type-offerings --filters Name=instance-type,Values=${INSTANCE} --region  ${REGION} | jq -r '.InstanceTypeOfferings[0].Location | select( . != null )'
+  done
+  echo ""
+done
