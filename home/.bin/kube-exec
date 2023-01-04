@@ -56,9 +56,9 @@ if [[ "$POD" == "" ]]; then
     exit 1
   )
 
-  pod=($(kubectl get pods --all-namespaces -owide | fzf | awk '{print $1, $2}'))
-  POD=$pod[1]
-  NAMESPACE=$pod[0]
+  pod=($(kubectl get pods --all-namespaces -o wide | _fzf | awk '{print $1, $2}'))
+  POD=${pod[1]}
+  NAMESPACE=${pod[0]}
 fi
 
 echo kubectl exec -it --namespace $NAMESPACE $POD $CMD

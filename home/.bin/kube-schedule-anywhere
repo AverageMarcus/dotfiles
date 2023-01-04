@@ -50,9 +50,9 @@ if [[ "$DEPLOYMENT" == "" ]]; then
     exit 1
   )
 
-  deployment=($(kubectl get deployments --all-namespaces -owide | fzf | awk '{print $1, $2}'))
-  DEPLOYMENT=$deployment[1]
-  NAMESPACE=$pod[0]
+  deployment=($(kubectl get deployments --all-namespaces -o wide | _fzf | awk '{print $1, $2}'))
+  DEPLOYMENT=${deployment[1]}
+  NAMESPACE=${pod[0]}
 fi
 
 kubectl patch deployment -n ${NAMESPACE} ${DEPLOYMENT} -p '{"spec": { "template": { "spec": { "tolerations": [ { "operator": "Exists" } ] } } } }' 1>/dev/null

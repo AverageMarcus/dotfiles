@@ -41,3 +41,7 @@ else
       echo $@
     }
 fi
+
+_fzf() {
+  fzf --multi --ansi -i -1 --height=50% --reverse -0 --header-lines=1 --border --info=hidden
+}
