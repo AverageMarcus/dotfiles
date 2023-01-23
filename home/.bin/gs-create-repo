@@ -62,17 +62,17 @@ echo "✨ Creating new repo $(italic ${VISIBILITY}) $(orange ${REPOSITORY_NAME})
 gh repo create --${VISIBILITY} --template ${TEMPLATE} giantswarm/${REPOSITORY_NAME}
 
 if [ -d helm/APP-NAME ]; then
-  mv helm/APP-NAME helm/${REPOSITORY_NAME}
+  mv 'helm/{APP-NAME}' helm/${REPOSITORY_NAME}
 fi
 
 devctl replace -i '{APP-NAME}' ${REPOSITORY_NAME} --ignore .git ./.** ./**
 
 # Clean up some stuff
-sed -i '' 's|\[Read me after cloning this template (GS staff only)\](https://intranet.giantswarm.io/docs/dev-and-releng/app-developer-processes/adding_app_to_appcatalog/)||g' README.md
-sed -i '' 's|- {APP HELM REPOSITORY}||g' README.md
-sed -i '' '$!N; /^\(.*\)\n\1$/!P; D' README.md
-sed -i '' 's/- .*//' CHANGELOG.md
-sed -i '' '$!N; /^\(.*\)\n\1$/!P; D' CHANGELOG.md
+sed -i 's|\[Read me after cloning this template (GS staff only)\](https://intranet.giantswarm.io/docs/dev-and-releng/app-developer-processes/adding_app_to_appcatalog/)||g' README.md
+sed -i 's|- {APP HELM REPOSITORY}||g' README.md
+sed -i '$!N; /^\(.*\)\n\1$/!P; D' README.md
+sed -i 's/- .*//' CHANGELOG.md
+sed -i '$!N; /^\(.*\)\n\1$/!P; D' CHANGELOG.md
 
 
 printf "Run Kubebuilder init? (y/n): "
