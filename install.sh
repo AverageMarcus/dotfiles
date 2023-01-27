@@ -35,7 +35,7 @@ BREW_TOOLS=(
   tektoncd/tools/tektoncd-cli tldr tailscale yq hashicorp/tap/vault
   tabby vale lastpass-cli jless macchina tz vmware-tanzu/carvel/kapp viddy
   homeassistant-cli act dnsmasq gh kubebuilder golangci-lint gnu-sed
-  pulumi/tap/pulumi kubeseal podman podman-desktop
+  pulumi/tap/pulumi kubeseal podman podman-desktop fluxcd/tap/flux
   )
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
