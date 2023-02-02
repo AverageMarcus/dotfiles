@@ -5,14 +5,18 @@ source .utils
 set -e
 
 VERBOSE=""
+TARGET_RESOURCE="all"
+NAMESPACES="-A"
 
 print_usage() {
-  blue "flux-refresh-all - Refresh all flux resources"
+  blue "flux-refresh - Refresh all flux resources"
   echo " "
   underline "Usage:"
-  echo "flux-refresh-all [options]"
+  echo "flux-refresh [options]"
   echo " "
   underline "Options:"
+  echo "-t, --type            the resource type to target. Valid options: gitrepo, helmrepository, kustomization, helmrelease & all. Default: all"
+  echo "-n, --namespace       the namespace resources belong in. Default: all namespaces"
   echo "    --verbose         show full verbose output"
   echo "-h, --help            show this help text"
 }
@@ -23,20 +27,38 @@ while test $# -gt 0; do
       print_usage
       exit 0
       ;;
+    -t|--type)
+      shift
+      TARGET_RESOURCE=$1
+      shift
+      ;;
+    -n|--namespace)
+      shift
+      NAMESPACES="-n $1"
+      shift
+      ;;
     --verbose)
       VERBOSE="true"
       shift
       ;;
     *)
-      break
+      shift
       ;;
   esac
 done
 
-GITREPOS=$(kubectl get gitrepo -A -o json | jq -r '.items[] | "\(.metadata.namespace)/\( .kind)/\( .metadata.name)"')
-HELMREPOS=$(kubectl get helmrepository -A -o json | jq -r '.items[] | "\(.metadata.namespace)/\( .kind)/\( .metadata.name)"')
-KUSTOMIZATIONS=$(kubectl get kustomization -A -o json | jq -r '.items[] | "\(.metadata.namespace)/\( .kind)/\( .metadata.name)"')
-HEALMRELEASES=$(kubectl get helmrelease -A -o json | jq -r '.items[] | "\(.metadata.namespace)/\( .kind)/\( .metadata.name)"')
+if [[ "${TARGET_RESOURCE}" == "all" || "${TARGET_RESOURCE}" == "gitrepo" ]]; then
+  GITREPOS=$(kubectl get gitrepo ${NAMESPACES} -o json | jq -r '.items[] | "\(.metadata.namespace)/\( .kind)/\( .metadata.name)"')
+fi
+if [[ "${TARGET_RESOURCE}" == "all" || "${TARGET_RESOURCE}" == "helmrepository" ]]; then
+  HELMREPOS=$(kubectl get helmrepository ${NAMESPACES} -o json | jq -r '.items[] | "\(.metadata.namespace)/\( .kind)/\( .metadata.name)"')
+fi
+if [[ "${TARGET_RESOURCE}" == "all" || "${TARGET_RESOURCE}" == "kustomization" ]]; then
+  KUSTOMIZATIONS=$(kubectl get kustomization ${NAMESPACES} -o json | jq -r '.items[] | "\(.metadata.namespace)/\( .kind)/\( .metadata.name)"')
+fi
+if [[ "${TARGET_RESOURCE}" == "all" || "${TARGET_RESOURCE}" == "helmrelease" ]]; then
+  HEALMRELEASES=$(kubectl get helmrelease ${NAMESPACES} -o json | jq -r '.items[] | "\(.metadata.namespace)/\( .kind)/\( .metadata.name)"')
+fi
 
 if [[ "${GITREPOS}" != "" ]]; then
   blue "Refreshing GitRepositories"
