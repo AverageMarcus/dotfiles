@@ -133,7 +133,6 @@ workflows:
           filters:
             tags:
               only: /^v.*/
-                k
     # Ensure that for every commit
     # there is an app version in the test catalog.
       - architect/push-to-app-catalog:
