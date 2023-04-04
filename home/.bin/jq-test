@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+source .utils
+
+
+print_usage() {
+  orange "jq-test - interactively use JQ against a json file"
+  echo " "
+  underline "Usage:"
+  echo "jq-test [FILE]"
+  echo " "
+  underline "Options:"
+  echo "-h, --help                show this help text"
+}
+
+POS_ARGS=()
+
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      POS_ARGS+=$1
+      shift
+      ;;
+  esac
+done
+
+if [ ${#POS_ARGS[@]} -eq 0 ]
+then
+  print_usage
+  exit 0
+fi
+
+echo '' | fzf --preview "jq {q} < ${POS_ARGS[@]}"
