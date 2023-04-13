@@ -59,7 +59,9 @@ REPOSITORY_NAME=${POS_ARGS[0]}
 
 echo "✨ Creating new repo $(italic ${VISIBILITY}) $(orange ${REPOSITORY_NAME}) using base template $(blue ${TEMPLATE})"
 
-gh repo create --${VISIBILITY} --template ${TEMPLATE} giantswarm/${REPOSITORY_NAME}
+gh repo create  --${VISIBILITY} --template ${TEMPLATE} giantswarm/${REPOSITORY_NAME}
+
+git take git@github.com:giantswarm/${REPOSITORY_NAME}.git
 
 if [ -d helm/APP-NAME ]; then
   mv 'helm/{APP-NAME}' helm/${REPOSITORY_NAME}
