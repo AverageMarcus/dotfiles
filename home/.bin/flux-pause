@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+source .utils
+
+set -e
+
+VERBOSE=""
+TARGET_RESOURCE="kustomization"
+NAMESPACES="-n flux-system"
+
+print_usage() {
+  blue "flux-pause - Suspends Flux Kustomization resources"
+  echo " "
+  underline "Usage:"
+  echo "flux-pause [options] RESOURCE_NAME..."
+  echo " "
+  underline "Options:"
+  echo "-n, --namespace       the namespace resources belong in. Default: flux-system"
+  echo "-v  --verbose         show full verbose output"
+  echo "-h, --help            show this help text"
+}
+
+RESOURCES=()
+
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    -n|--namespace)
+      shift
+      NAMESPACES="-n $1"
+      shift
+      ;;
+    -v|--verbose)
+      VERBOSE="true"
+      shift
+      ;;
+    *)
+      RESOURCES+=(${1})
+      shift
+      ;;
+  esac
+done
+
+
+for RESOURCE in ${RESOURCES[@]}
+do
+  printf "Pausing '${RESOURCE}'..."
+  if [[ "${VERBOSE}" == "true" ]]; then
+    echo ""
+    flux suspend kustomization ${RESOURCE} || true
+  else
+    flux suspend kustomization ${RESOURCE} &> /dev/null || true
+    printf " ✅"
+  fi
+  echo ""
+done
