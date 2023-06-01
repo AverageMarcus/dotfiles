@@ -1,3 +1,5 @@
+DISABLE_AUTO_UPDATE="true"
+
 PATH_DIRS=(
   "${HOME}/.bin"
   "${KREW_ROOT:-${HOME}/.krew}/bin"
