@@ -50,9 +50,9 @@ do
   printf "Pausing '${RESOURCE}'..."
   if [[ "${VERBOSE}" == "true" ]]; then
     echo ""
-    flux suspend kustomization ${RESOURCE} || true
+    flux suspend kustomization ${NAMESPACES} ${RESOURCE} || true
   else
-    flux suspend kustomization ${RESOURCE} &> /dev/null || true
+    flux suspend kustomization ${NAMESPACES} ${RESOURCE} &> /dev/null || true
     printf " ✅"
   fi
   echo ""
