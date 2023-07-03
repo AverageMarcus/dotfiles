@@ -51,7 +51,7 @@
 	logg = "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 	dif = "!git diff -w"
 	pop = "!git stash pop"
-
+	current-remote = "!func(){ REMOTE=$(git rev-parse --abbrev-ref @{u}) ; echo ${REMOTE%/*} ; }; func"
 [help]
 	autocorrect = 1
 

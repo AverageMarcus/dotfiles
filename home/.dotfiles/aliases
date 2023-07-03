@@ -76,6 +76,16 @@ git() {
   elif [ "$1" = "co" ]; then # Sign all commits
     shift
     _git checkout -b $@
+  elif [ "$1" = "push" ]; then # Sign all commits
+    shift
+    if [ $# -eq 0 ]; then
+      remote_url=$(_git remote get-url $(git current-remote))
+      if [[ $remote_url == *"kubernetes/"* ]] || [[ $remote_url == *"kubernetes-sigs/"* ]]; then
+        echo "⚠️  Don't push directly to Kubernetes"
+        return 1
+      fi
+    fi
+    _git push $@
   else
     _git $@
   fi
