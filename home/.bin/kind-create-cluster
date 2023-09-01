@@ -116,3 +116,5 @@ echo "${CONFIG}" > ${CONFIG_FILE}
 cat ${CONFIG_FILE}
 
 kind create cluster --config ${CONFIG_FILE}
+
+kind get kubeconfig --name ${NAME} > ~/.kube/clusters/kind.yaml
