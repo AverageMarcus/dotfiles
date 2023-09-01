@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+source .utils
+
+# Force using the `go install` version as we need to pin to 0.19 for now
+alias kind=$GOPATH/bin/kind
+
+CONTEXT_NAME=$(kubectl config current-context | sed -e "s/kind-//")
+
+kind --version | grep "0.19." > /dev/null
+if [[ "$?" != "0" ]]; then
+  echo "Kind v0.19.0 is required"
+  exit 1
+fi
+
+print_usage() {
+  orange "kind-delete-cluster - delete a Kind cluster"
+  echo " "
+  underline "Usage:"
+  echo "kind-delete-cluster [cluster-name]"
+  echo " "
+  echo "If no cluster-name is provided it will attempt to get it from the current kubectl context"
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+}
+
+# Positional args
+NAME=${1:-${CONTEXT_NAME}}
+
+kind delete cluster --name ${NAME}

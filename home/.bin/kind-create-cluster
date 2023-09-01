@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+source .utils
+
+# Force using the `go install` version as we need to pin to 0.19 for now
+alias kind=$GOPATH/bin/kind
+
+kind --version | grep "0.19." > /dev/null
+if [[ "$?" != "0" ]]; then
+  echo "Kind v0.19.0 is required"
+  exit 1
+fi
+
+NAME=""
+VERSION="1.28.0@sha256:dad5a6238c5e41d7cac405fae3b5eda2ad1de6f1190fa8bfc64ff5bb86173213"
+NODES="2"
+FEATURE_GATES="ValidatingAdmissionPolicy"
+RUNTIME_CONFIG="admissionregistration.k8s.io/v1beta1"
+
+print_usage() {
+  orange "kind-create-cluster - create a Kind cluster"
+  echo " "
+  underline "Usage:"
+  echo "kind-create-cluster [cluster-name]"
+  echo " "
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+  echo "-v, --version         the version of kubernetes to use (default: ${VERSION})"
+  echo "-n, --nodes           the number of worker nodes (default: ${NODES})"
+  echo "-f, --feature-gates   a comma seperated list of feature-gates to enable (default: ${FEATURE_GATES})"
+  echo "-r, --runtime-config  a comma seperated list of API versions to enable (default: ${RUNTIME_CONFIG})"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--nodes)
+      shift
+      NODES=$1
+      shift
+      ;;
+    -v|--version)
+      shift
+      VERSION=$1
+      shift
+      ;;
+    -f|--feature-gates)
+      shift
+      FEATURE_GATES=$1
+      shift
+      ;;
+    -r|--runtime-config)
+      shift
+      RUNTIME_CONFIG=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+# Positional args
+NAME=${1:-$(LC_ALL=C tr -dc a-z </dev/urandom | head -c 10)}
+
+function node() {
+  TYPE=$1
+  COUNT=$2
+  for ((i = 1 ; i <= $COUNT ; i++)); do
+    echo "- role: ${TYPE}"
+    echo "  image: kindest/node:${VERSION}"
+    # echo "  labels:"
+    # echo "    node-role.kubernetes.io/${TYPE}: ${TYPE}"
+    # echo "    kubernetes.io/role: ${TYPE}"
+  done
+}
+
+function feature-gates() {
+  if [[ "${FEATURE_GATES}" != "" ]]; then
+    echo "featureGates:"
+    FEATURES=(${FEATURE_GATES//,/ })
+    for f in "${FEATURES[@]}"; do
+      echo "  \"${f}\": true"
+    done
+  fi
+}
+
+function runtime-config() {
+  if [[ "${RUNTIME_CONFIG}" != "" ]]; then
+    echo "runtimeConfig:"
+    RUNTIME=(${RUNTIME_CONFIG//,/ })
+    for f in "${RUNTIME[@]}"; do
+      echo "  \"${f}\": true"
+    done
+  fi
+}
+
+CONFIG="kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: ${NAME}
+nodes:
+$(node "control-plane" 1)
+$(node "worker" $NODES)
+$(feature-gates)
+$(runtime-config)
+"
+
+CONFIG_FILE=`mktemp`
+
+echo "${CONFIG}" > ${CONFIG_FILE}
+
+cat ${CONFIG_FILE}
+
+kind create cluster --config ${CONFIG_FILE}
