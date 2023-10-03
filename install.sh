@@ -36,7 +36,7 @@ BREW_TOOLS=(
   tabby vale lastpass-cli jless macchina tz vmware-tanzu/carvel/kapp viddy
   homeassistant-cli act dnsmasq gh kubebuilder golangci-lint gnu-sed
   pulumi/tap/pulumi kubeseal podman podman-desktop fluxcd/tap/flux
-  watch crane openssh
+  watch crane openssh siderolabs/talos/talosctl
   )
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
