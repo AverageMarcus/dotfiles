@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+source .utils
+
+CODE_DIR="${HOME}/Code/GiantSwarm/cluster-test-suites"
+
+print_usage() {
+  orange "gs-teardown - Teardown a previously created test cluster"
+  echo " "
+  underline "Usage:"
+  echo "gs-teardown [provider]"
+  echo " "
+  underline "Examples:"
+  echo "> gs-teardown capa"
+  echo "> gs-teardown eks"
+  echo " "
+  underline "Options:"
+  echo "-h, --help                show this help text"
+  echo "    --dir                 override the directory of cluster-test-suite code"
+}
+
+POS_ARGS=()
+
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    --dir)
+      shift
+      CODE_DIR=$1
+      shift
+      ;;
+    *)
+      POS_ARGS+=(`echo $1 | tr '/' ' '`)
+      shift
+      ;;
+  esac
+done
+
+case ${#POS_ARGS[@]} in
+  0)
+    print_usage
+    exit 1
+    ;;
+  1)
+    PROVIDER=""
+    CONTEXT=""
+
+    case ${POS_ARGS[0]} in
+      "aws"|"capa")
+        PROVIDER="aws"
+        CONTEXT="capa"
+        ;;
+      "azure"|"capz")
+        PROVIDER="azure"
+        CONTEXT="capz"
+        ;;
+      "vsphere"|"capv")
+        PROVIDER="vsphere"
+        CONTEXT="capv"
+        ;;
+      "cloud-director"|"capvcd")
+        PROVIDER="cloud-director"
+        CONTEXT="capvcd"
+        ;;
+      "eks")
+        PROVIDER="eks"
+        CONTEXT="eks"
+        ;;
+      "aws-private"|"capa-private")
+        PROVIDER="aws"
+        CONTEXT="capa-private-proxy"
+        ;;
+    esac
+
+    go run ${CODE_DIR}/cmd/teardown/main.go \
+      --provider ${PROVIDER} \
+      --context ${CONTEXT} \
+      --standup-directory ./
+    ;;
+  *)
+    print_usage
+    exit 1
+    ;;
+esac
