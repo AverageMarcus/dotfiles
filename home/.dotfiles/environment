@@ -31,3 +31,6 @@ export TZ_LIST="Europe/Berlin;Europe/Sofia;UTC"
 
 # Docker
 export DOCKER_HOST=$(docker context inspect --format='{{.Endpoints.docker.Host}}')
+
+# Brew - Prevent updating all packages when installing a new one
+export HOMEBREW_NO_AUTO_UPDATE=1
