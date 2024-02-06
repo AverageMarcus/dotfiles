@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+source .utils
+
+set -e
+RENOVATE_USER="29139614"
+MERGE=false
+
+print_usage() {
+  blue "renovate-prs - List all Renovate PRs and batch approve"
+  echo " "
+  underline "Usage:"
+  echo "renovate-prs [options]"
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+  echo "-m, --merge           merge PRs after approving"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -m|--merge)
+      shift
+      MERGE=true
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+PULLS=$(curl --silent -L -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28" \
+  "https://api.github.com/search/issues?q=is%3Apr%20is%3Aopen%20archived%3Afalse%20sort%3Aupdated-desc%20review-requested%3AAverageMarcus%20renovate" \
+  | jq -r -c ".items[] | select(.user.id == ${RENOVATE_USER} and .draft == false) | @base64")
+
+if [[ "${PULLS}" == "" ]]; then
+  blue "No Renovate PRs pending"
+else
+
+  for PR in ${PULLS}; do
+    PR=$(echo ${PR} | base64 -d)
+    NUMBER=$(echo ${PR} | jq -r '.number')
+    TITLE=$(echo ${PR} | jq -r '.title')
+    URL=$(echo ${PR} | jq -r '.pull_request.html_url')
+    BODY=$(echo ${PR} | jq -r '.body')
+
+    PACKAGES=""
+    HEADER_FOUND=false
+    DIVIDER_FOUND=false
+    while IFS= read -r line; do
+      if [[ "${line}" == "" ]] && [[ "${HEADER_FOUND}" == "true" ]] && [[ "${DIVIDER_FOUND}" == "true" ]]; then
+        break
+      fi
+
+      if [[ "${HEADER_FOUND}" == "true" ]] && [[ "${DIVIDER_FOUND}" == "true" ]]; then
+        line=$(echo ${line} | sed -r 's/\((.+)\)//g' | sed -r 's/(\[|\]|`)//g')
+        parts=(${line//|/ })
+
+        PACKAGES+=" - ${parts[0]} - ${parts[${#parts[@]}-3]]} ➡ ${parts[${#parts[@]}-1]]}\n"
+      fi
+
+      if [[ "${line}" == "| Package | Type | Update | Change |" ]] || [[ "${line}" == "| Package | Update | Change |" ]]; then
+        HEADER_FOUND=true
+      fi
+      if [[ "${line}" == "|---|---|---|---|" ]] || [[ "${line}" == "|---|---|---|" ]]; then
+        DIVIDER_FOUND=true
+      fi
+    done <<< "$BODY"
+
+    bold "#${NUMBER} ${STATE} $(blue "${TITLE}")"
+    printf "🌐 $(underline ${URL})\n"
+    printf "${PACKAGES}"
+    echo ""
+  done
+
+fi
