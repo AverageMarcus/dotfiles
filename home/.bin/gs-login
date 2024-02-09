@@ -65,7 +65,7 @@ case ${#POS_ARGS[@]} in
 
     TELEPORT_CLUSTER_NAME="$(echo "${POS_ARGS[@]}" | tr ' ' '-')"
     TELEPORT_SUPPORTED=$(tsh kube ls -f json --query "name == \"${TELEPORT_CLUSTER_NAME}\"" 2>/dev/null | jq '. | length')
-    if [ ${TELEPORT_SUPPORTED} -eq 0 ]; then
+    if [[ "${TELEPORT_SUPPORTED}" == "0" ]]; then
       # Teleport not supported, old style login
       echo "Cluster isn't know to Teleport, using old login method"
       opsctl login ${DEBUG} ${POS_ARGS[@]}
