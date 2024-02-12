@@ -87,7 +87,7 @@ case ${#POS_ARGS[@]} in
     go run ${CODE_DIR}/cmd/teardown/main.go \
       --provider ${PROVIDER} \
       --context ${CONTEXT} \
-      --standup-directory ${OUTPUT_DIR}
+      --standup-directory ${INPUT_DIR}
     cd ${CUR_DIR}
     ;;
   *)
