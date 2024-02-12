@@ -3,6 +3,8 @@
 source .utils
 
 CODE_DIR="${HOME}/Code/GiantSwarm/cluster-test-suites"
+CUR_DIR=$(pwd)
+INPUT_DIR=${CUR_DIR}
 
 print_usage() {
   orange "gs-teardown - Teardown a previously created test cluster"
@@ -17,6 +19,7 @@ print_usage() {
   underline "Options:"
   echo "-h, --help                show this help text"
   echo "    --dir                 override the directory of cluster-test-suite code"
+  echo "    --in                  override the directory where the previously output files exist"
 }
 
 POS_ARGS=()
@@ -30,6 +33,11 @@ while test $# -gt 0; do
     --dir)
       shift
       CODE_DIR=$1
+      shift
+      ;;
+    --input)
+      shift
+      INPUT_DIR=$1
       shift
       ;;
     *)
@@ -75,10 +83,12 @@ case ${#POS_ARGS[@]} in
         ;;
     esac
 
+    cd ${CODE_DIR}
     go run ${CODE_DIR}/cmd/teardown/main.go \
       --provider ${PROVIDER} \
       --context ${CONTEXT} \
-      --standup-directory ./
+      --standup-directory ${OUTPUT_DIR}
+    cd ${CUR_DIR}
     ;;
   *)
     print_usage
