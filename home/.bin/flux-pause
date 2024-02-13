@@ -5,6 +5,7 @@ source .utils
 set -e
 
 VERBOSE=""
+ALL=""
 TARGET_RESOURCE="kustomization"
 NAMESPACES="-n flux-system"
 
@@ -15,6 +16,7 @@ print_usage() {
   echo "flux-pause [options] RESOURCE_NAME..."
   echo " "
   underline "Options:"
+  echo "    --all             pause all Kustomizations"
   echo "-n, --namespace       the namespace resources belong in. Default: flux-system"
   echo "-v  --verbose         show full verbose output"
   echo "-h, --help            show this help text"
@@ -37,6 +39,10 @@ while test $# -gt 0; do
       VERBOSE="true"
       shift
       ;;
+    --all)
+      ALL="true"
+      shift
+      ;;
     *)
       RESOURCES+=(${1})
       shift
@@ -44,6 +50,9 @@ while test $# -gt 0; do
   esac
 done
 
+if [[ "${ALL}" == "true" ]]; then
+  RESOURCES=$(kubectl get kustomization ${NAMESPACES} -o json | jq -r '.items[] | "\( .metadata.name)"')
+fi
 
 for RESOURCE in ${RESOURCES[@]}
 do
