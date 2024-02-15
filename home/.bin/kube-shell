@@ -6,8 +6,8 @@ NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}' &>/d
 set -e
 NAMESPACE=${NAMESPACE:-default}
 POD="shell"
-IMAGE="bash"
-CMD="sh"
+IMAGE="digitalocean/doks-debug"
+CMD="bash"
 
 print_usage() {
   blue "kube-shell - create a new pod and exec into it's shell"
@@ -19,7 +19,7 @@ print_usage() {
   echo "-h, --help            show this help text"
   echo "-n, --namespace       the namespace the pod should launch in"
   echo "-p, --pod             the name of the pod to get logs for (default: shell)"
-  echo "-i, --image           the image to use for the shell container (default: bash)"
+  echo "-i, --image           the image to use for the shell container (default: digitalocean/doks-debug)"
   echo "-c, --command         the initial command to execute in the container (default: sh)"
 }
 
@@ -57,5 +57,16 @@ done
 
 NAMESPACE=${NAMESPACE:-default}
 
-echo kubectl run -it --namespace $NAMESPACE $POD --image $IMAGE --restart Never --rm -- $CMD
-kubectl run -it --namespace $NAMESPACE $POD --image $IMAGE --restart Never --rm -- $CMD
+OVERRIDES='{
+  "spec": {
+    "securityContext": {"runAsGroup": 1000,"runAsNonRoot": true,"runAsUser": 1000,"seccompProfile": {"type": "RuntimeDefault"}},
+    "containers": [
+      {
+        "name":"'$POD'","image":"'$IMAGE'", "command": ["'$CMD'"],
+        "stdin": true,"stdinOnce": true,"tty": true,
+        "securityContext": {"allowPrivilegeEscalation": false,"capabilities": {"drop": ["ALL"]},"privileged": false,"runAsGroup": 1000,"runAsNonRoot": true,"runAsUser": 1000,"seccompProfile": {"type": "RuntimeDefault"}}
+      }
+    ]
+  }
+}'
+kubectl run -it --namespace $NAMESPACE $POD --image $IMAGE --restart Never --overrides "${OVERRIDES}" --rm -- $CMD
