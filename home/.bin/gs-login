@@ -71,6 +71,12 @@ case ${#POS_ARGS[@]} in
       opsctl login ${DEBUG} ${POS_ARGS[@]}
     else
       echo "Logging in with Teleport. Cluster: '${TELEPORT_CLUSTER_NAME}'"
+      # Make sure that caching is disabled to avoid issues with cross-cluster cache pollution
+      TELEPORT_CACHE_DIR="${HOME}/.kube/cache/discovery/teleport.giantswarm.io_443"
+      if [[ "$(readlink -f ${TELEPORT_CACHE_DIR})" != "/dev/null" ]]; then
+        rm -rf ${TELEPORT_CACHE_DIR}
+        ln -s /dev/null ${TELEPORT_CACHE_DIR}
+      fi
       tsh kube login ${TELEPORT_CLUSTER_NAME}
     fi
     ;;
