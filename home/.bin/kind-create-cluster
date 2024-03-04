@@ -16,6 +16,7 @@ VERSION="1.28.0@sha256:dad5a6238c5e41d7cac405fae3b5eda2ad1de6f1190fa8bfc64ff5bb8
 NODES="2"
 FEATURE_GATES="ValidatingAdmissionPolicy"
 RUNTIME_CONFIG="admissionregistration.k8s.io/v1beta1"
+AUDIT_POLICY=""
 
 print_usage() {
   orange "kind-create-cluster - create a Kind cluster"
@@ -30,6 +31,7 @@ print_usage() {
   echo "-n, --nodes           the number of worker nodes (default: ${NODES})"
   echo "-f, --feature-gates   a comma seperated list of feature-gates to enable (default: ${FEATURE_GATES})"
   echo "-r, --runtime-config  a comma seperated list of API versions to enable (default: ${RUNTIME_CONFIG})"
+  echo "    --audit-policy    a file containing the audit policy config"
 }
 
 while test $# -gt 0; do
@@ -54,6 +56,11 @@ while test $# -gt 0; do
       RUNTIME_CONFIG=$1
       shift
       ;;
+    --audit-policy)
+      shift
+      AUDIT_POLICY=$1
+      shift
+      ;;
     -h|--help)
       print_usage
       exit 0
@@ -73,9 +80,32 @@ function node() {
   for ((i = 1 ; i <= $COUNT ; i++)); do
     echo "- role: ${TYPE}"
     echo "  image: kindest/node:${VERSION}"
-    # echo "  labels:"
-    # echo "    node-role.kubernetes.io/${TYPE}: ${TYPE}"
-    # echo "    kubernetes.io/role: ${TYPE}"
+    if [[ "${AUDIT_POLICY}" != "" ]]; then
+      if [[ "${TYPE}" == "control-plane" ]]; then
+        echo "  kubeadmConfigPatches:"
+        echo "  - |"
+        echo "    kind: ClusterConfiguration"
+        echo "    apiServer:"
+        echo "        extraArgs:"
+        echo "          audit-log-path: /var/log/kubernetes/kube-apiserver-audit.log"
+        echo "          audit-policy-file: /etc/kubernetes/policies/audit-policy.yaml"
+        echo "        extraVolumes:"
+        echo "          - name: audit-policies"
+        echo "            hostPath: /etc/kubernetes/policies"
+        echo "            mountPath: /etc/kubernetes/policies"
+        echo "            readOnly: true"
+        echo "            pathType: "DirectoryOrCreate""
+        echo "          - name: "audit-logs""
+        echo "            hostPath: "/var/log/kubernetes""
+        echo "            mountPath: "/var/log/kubernetes""
+        echo "            readOnly: false"
+        echo "            pathType: DirectoryOrCreate"
+        echo "  extraMounts:"
+        echo "  - hostPath: ${AUDIT_POLICY}"
+        echo "    containerPath: /etc/kubernetes/policies/audit-policy.yaml"
+        echo "    readOnly: true"
+      fi
+    fi
   done
 }
 
