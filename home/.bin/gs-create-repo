@@ -4,7 +4,7 @@ source .utils
 
 TEMPLATE="giantswarm/template-app"
 VISIBILITY="public"
-CODEOWNER_TEAM="team-hydra"
+CODEOWNER_TEAM="team-tinkerers"
 
 print_usage() {
   orange "gs-create-repo - a new Giant Swarm repo"
@@ -20,7 +20,6 @@ print_usage() {
   echo "    --visibility      the visibility of the repo (default: ${VISIBILITY}"
 }
 
-
 POS_ARGS=()
 while test $# -gt 0; do
   case "$1" in
@@ -31,7 +30,17 @@ while test $# -gt 0; do
       ;;
     -p|--private)
       shift
-      PRIVATE="--private"
+      VISIBILITY="private"
+      ;;
+    --visibility)
+      shift
+      VISIBILITY=$1
+      shift
+      ;;
+    --team)
+      shift
+      CODEOWNER_TEAM=$1
+      shift
       ;;
     -h|--help)
       print_usage
@@ -57,11 +66,24 @@ REPOSITORY_NAME=${POS_ARGS[0]}
 
 #############################################
 
-echo "✨ Creating new repo $(italic ${VISIBILITY}) $(orange ${REPOSITORY_NAME}) using base template $(blue ${TEMPLATE})"
+echo "✨ Creating new repo $(italic ${VISIBILITY}) $(orange ${REPOSITORY_NAME}) using base template $(blue ${TEMPLATE}) assigned to $(underline ${CODEOWNER_TEAM})"
+
+printf "Continue? (y/n): "
+read CONFIRM
+if [[ "${CONFIRM}" != "y" ]]; then
+  exit 1
+fi
 
 gh repo create  --${VISIBILITY} --template ${TEMPLATE} giantswarm/${REPOSITORY_NAME}
 
-git take git@github.com:giantswarm/${REPOSITORY_NAME}.git
+echo "Waiting breifly for cluster to be created from template..."
+sleep 5
+
+DST="${HOME}/Code/giantswarm/${REPOSITORY_NAME}"
+echo "Cloning repo to ${DST}"
+mkdir -p ${DST}
+git clone git@github.com:giantswarm/${REPOSITORY_NAME}.git ${DST}
+cd ${DST}
 
 if [ -d helm/APP-NAME ]; then
   mv 'helm/{APP-NAME}' helm/${REPOSITORY_NAME}
@@ -76,8 +98,8 @@ sed -i '$!N; /^\(.*\)\n\1$/!P; D' README.md
 sed -i 's/- .*//' CHANGELOG.md
 sed -i '$!N; /^\(.*\)\n\1$/!P; D' CHANGELOG.md
 
-
-printf "Run Kubebuilder init? (y/n): "
+echo ""
+blue "Run Kubebuilder init? (y/n): "
 read CONFIRM
 if [ "${CONFIRM}" = "y" ]; then
   mv helm .helm
@@ -91,7 +113,8 @@ devctl gen workflows --flavour app --flavour generic --check-secrets
 devctl gen makefile --flavour app --flavour generic --language go
 touch Makefile.custom.mk
 
-printf "Update Circle-CI job? (y/n): "
+echo ""
+blue "Update Circle-CI job? (y/n): "
 read CONFIRM
 if [ "${CONFIRM}" = "y" ]; then
 
@@ -175,11 +198,14 @@ devctl repo setup giantswarm/${REPOSITORY_NAME} \
   --allow-squashmerge=true --allow-updatebranch=true --delete-branch-on-merge=true \
   --enable-issues=true --enable-projects=false --enable-wiki=false
 
+echo ""
 echo "🎉 New repo $(orange ${REPOSITORY_NAME}) created! - https://github.com/giantswarm/${REPOSITORY_NAME}"
+echo ""
 
 echo "⚡️ Adding reference to $(orange ${REPOSITORY_NAME}) in giantswarm/github"
-git take git@github.com:giantswarm/github.git
-git main
+cd "${HOME}/Code/giantswarm/github"
+git checkout main
+git pull
 yq -i '. += {"name": "'${REPOSITORY_NAME}'", "gen": {"flavour": "app,generic", "language": "go"}, "replace": {"architect-orb": true, "renovate": true}} | sort_by(.name)' repositories/${CODEOWNER_TEAM}.yaml
 git add repositories/${CODEOWNER_TEAM}.yaml
 git commit -m "Added ${REPOSITORY_NAME} to ${CODEOWNER_TEAM} repos"
