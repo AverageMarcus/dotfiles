@@ -2,9 +2,8 @@
 
 source .utils
 
-CODE_DIR="${HOME}/Code/GiantSwarm/cluster-test-suites"
-CUR_DIR=$(pwd)
-OUTPUT_DIR=${CUR_DIR}
+CODE_DIR="${HOME}/Code/GiantSwarm/cluster-standup-teardown"
+OUTPUT_DIR=$(pwd)
 
 print_usage() {
   orange "gs-standup - Standup a new test workload cluster, using the cluster-test-suites modules."
@@ -53,44 +52,32 @@ case ${#POS_ARGS[@]} in
     exit 1
     ;;
   1)
-    PROVIDER=""
     CONTEXT=""
 
     case ${POS_ARGS[0]} in
       "aws"|"capa")
-        PROVIDER="aws"
         CONTEXT="capa"
         ;;
       "azure"|"capz")
-        PROVIDER="azure"
         CONTEXT="capz"
         ;;
       "vsphere"|"capv")
-        PROVIDER="vsphere"
         CONTEXT="capv"
         ;;
       "cloud-director"|"capvcd")
-        PROVIDER="cloud-director"
         CONTEXT="capvcd"
         ;;
       "eks")
-        PROVIDER="eks"
         CONTEXT="eks"
         ;;
       "aws-private"|"capa-private")
-        PROVIDER="aws"
         CONTEXT="capa-private-proxy"
         ;;
     esac
 
-    cd ${CODE_DIR}
     go run ${CODE_DIR}/cmd/standup/main.go \
-      --provider ${PROVIDER} \
       --context ${CONTEXT} \
-      --cluster-values ${CODE_DIR}/providers/${CONTEXT}/standard/test_data/cluster_values.yaml \
-      --default-apps-values ${CODE_DIR}/providers/${CONTEXT}/standard/test_data/default-apps_values.yaml \
       --output ${OUTPUT_DIR}
-    cd ${CUR_DIR}
     ;;
   *)
     print_usage

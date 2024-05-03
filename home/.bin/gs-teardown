@@ -2,9 +2,8 @@
 
 source .utils
 
-CODE_DIR="${HOME}/Code/GiantSwarm/cluster-test-suites"
-CUR_DIR=$(pwd)
-INPUT_DIR=${CUR_DIR}
+CODE_DIR="${HOME}/Code/GiantSwarm/cluster-standup-teardown"
+INPUT_DIR=$(pwd)
 
 print_usage() {
   orange "gs-teardown - Teardown a previously created test cluster"
@@ -53,42 +52,32 @@ case ${#POS_ARGS[@]} in
     exit 1
     ;;
   1)
-    PROVIDER=""
     CONTEXT=""
 
     case ${POS_ARGS[0]} in
       "aws"|"capa")
-        PROVIDER="aws"
         CONTEXT="capa"
         ;;
       "azure"|"capz")
-        PROVIDER="azure"
         CONTEXT="capz"
         ;;
       "vsphere"|"capv")
-        PROVIDER="vsphere"
         CONTEXT="capv"
         ;;
       "cloud-director"|"capvcd")
-        PROVIDER="cloud-director"
         CONTEXT="capvcd"
         ;;
       "eks")
-        PROVIDER="eks"
         CONTEXT="eks"
         ;;
       "aws-private"|"capa-private")
-        PROVIDER="aws"
         CONTEXT="capa-private-proxy"
         ;;
     esac
 
-    cd ${CODE_DIR}
     go run ${CODE_DIR}/cmd/teardown/main.go \
-      --provider ${PROVIDER} \
       --context ${CONTEXT} \
       --standup-directory ${INPUT_DIR}
-    cd ${CUR_DIR}
     ;;
   *)
     print_usage
