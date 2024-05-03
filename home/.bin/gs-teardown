@@ -3,6 +3,7 @@
 source .utils
 
 CODE_DIR="${HOME}/Code/GiantSwarm/cluster-standup-teardown"
+CURR_DIR=$(pwd)
 INPUT_DIR=$(pwd)
 
 print_usage() {
@@ -75,9 +76,11 @@ case ${#POS_ARGS[@]} in
         ;;
     esac
 
+    cd ${CODE_DIR}
     go run ${CODE_DIR}/cmd/teardown/main.go \
       --context ${CONTEXT} \
       --standup-directory ${INPUT_DIR}
+    cd ${CUR_DIR}
     ;;
   *)
     print_usage
