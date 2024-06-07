@@ -69,7 +69,7 @@ if [[ "${SELECTOR}" == "" ]]; then
 else
   printf "Are you sure you want to delete all matching '${SELECTOR}'? (y/n): "
   SELECTOR="-l ${SELECTOR}"
-  NAMES="$(kubectl api-resources --namespaced --verbs list -o name 2>/dev/null | tr '\n' ,)"
+  NAMES="$(kubectl api-resources --verbs list -o name 2>/dev/null | tr '\n' ,)"
   RESOURCES=$(kubectl get "${NAMES::${#NAMES}-1}" --ignore-not-found ${SELECTOR} -n ${NAMESPACE} -o go-template='{{range.items}}{{.kind}}.{{.apiVersion}}/{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null | tr '[:upper:]' '[:lower:]' | sed -r "s|/(v.+)/|/|g")
 fi
 read CONFIRM

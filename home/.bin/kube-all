@@ -47,11 +47,14 @@ while test $# -gt 0; do
   esac
 done
 
+NAMESPACED="--namespaced"
+
 if [[ "${LABEL}" != "" ]]; then
   LABEL="-l ${LABEL}"
+  NAMESPACED=""
 fi
 
-NAMES="$(kubectl api-resources --namespaced --verbs list -o name | tr '\n' ,)"
+NAMES="$(kubectl api-resources ${NAMESPACED} --verbs list -o name | tr '\n' ,)"
 
 if [[ "$ALL_NAMESPACES" == "true" ]]; then
   kubectl get "${NAMES::${#NAMES}-1}" --show-kind --ignore-not-found ${LABEL} -A 2>/dev/null
