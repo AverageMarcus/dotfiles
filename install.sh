@@ -42,7 +42,7 @@ BREW_TOOLS=(
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
   pinentry-mac gpg gawk coreutils wget stats homebrew/cask-fonts/font-open-dyslexic-nerd-font
-  hiddenbar
+  hiddenbar dimentium/autoraise/autoraiseapp
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
