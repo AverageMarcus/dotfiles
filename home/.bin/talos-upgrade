@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+source .utils
+
+set -e
+
+if [[ "${TALOSCONFIG}" == "" ]]; then
+  echo "You need to set TALOSCONFIG before running this"
+  exit 1
+fi
+
+LATEST_RELEASE=$(curl --silent https://api.github.com/repos/siderolabs/talos/releases | jq -r '.[0]')
+TALOS_VERSION="$(jq --argjson LATEST_RELEASE "$LATEST_RELEASE" -c -n -r '$LATEST_RELEASE.tag_name')"
+KUBERNETES_VERSION="$(jq --argjson LATEST_RELEASE "$LATEST_RELEASE" -c -n -r '$LATEST_RELEASE.body | match("registry.k8s.io/kube-apiserver:v([0-9\\.]+)") | .captures[0].string')"
+
+blue "TALOS_VERSION      = ${TALOS_VERSION}"
+blue "KUBERNETES_VERSION = ${KUBERNETES_VERSION}"
+echo ""
+blue "ISO URL: https://github.com/siderolabs/talos/releases/download/${TALOS_VERSION}/metal-amd64.iso"
+echo ""
+
+kubectl cluster-info
+
+echo ""
+printf "Continue? (y/n): "
+read CONFIRM
+if [[ "${CONFIRM}" != "y" ]]; then
+  exit 1
+fi
+
+echo ""
+blue "Ensuring talosctl is up-to-date..."
+brew upgrade siderolabs/tap/talosctl
+
+CONTROL_PLANE="$(talosctl get nodetaintspec -o json | jq -r '.node')"
+WORKERS=( $(talosctl get nodeips -o json | jq -r '.node | select(. != "'${CONTROL_PLANE}'")'))
+
+echo ""
+kubectl get no -o wide
+
+echo ""
+blue "Upgrading the control plane first..."
+talosctl upgrade --image ghcr.io/siderolabs/installer:${TALOS_VERSION} --preserve=true --nodes ${CONTROL_PLANE}
+
+echo ""
+blue "Upgrading the worker nodes..."
+SLEEP="10"
+for NODE in "${WORKERS[@]}"
+do
+  talosctl upgrade --image ghcr.io/siderolabs/installer:${TALOS_VERSION} --preserve=true --nodes ${NODE}
+
+  italic "Waiting for ${SLEEP} seconds to let pods settle..."
+  sleep ${SLEEP}
+done
+
+echo ""
+kubectl get no -o wide
+
+# Only the control plane requires the k8s version upgrading, the workers are done as part of the OS upgrade
+echo ""
+blue "Upgrading Kubernetes..."
+talosctl upgrade-k8s --nodes ${CONTROL_PLANE} --to ${KUBERNETES_VERSION}
+
+echo ""
+kubectl get no -o wide
+
+echo ""
+orange "🎉 Upgrade Complete! 🎉"
+
+echo ""
+blue "ISO URL: https://github.com/siderolabs/talos/releases/download/${TALOS_VERSION}/metal-amd64.iso"
