@@ -9,7 +9,7 @@ if [[ "${TALOSCONFIG}" == "" ]]; then
   exit 1
 fi
 
-LATEST_RELEASE=$(curl --silent https://api.github.com/repos/siderolabs/talos/releases | jq -r '.[0]')
+LATEST_RELEASE=$(curl --silent https://api.github.com/repos/siderolabs/talos/releases | jq -r '[.[] | select(.prerelease == false)] | .[0]')
 TALOS_VERSION="$(jq --argjson LATEST_RELEASE "$LATEST_RELEASE" -c -n -r '$LATEST_RELEASE.tag_name')"
 KUBERNETES_VERSION="$(jq --argjson LATEST_RELEASE "$LATEST_RELEASE" -c -n -r '$LATEST_RELEASE.body | match("registry.k8s.io/kube-apiserver:v([0-9\\.]+)") | .captures[0].string')"
 
