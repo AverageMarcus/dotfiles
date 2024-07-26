@@ -37,7 +37,7 @@ BREW_TOOLS=(
   homeassistant-cli act dnsmasq gh kubebuilder golangci-lint gnu-sed
   pulumi/tap/pulumi kubeseal podman podman-desktop fluxcd/tap/flux
   watch crane openssh siderolabs/talos/talosctl civo/tools/civo
-  pete911/tap/kubectl-iam4sa gron azure-cli
+  pete911/tap/kubectl-iam4sa gron azure-cli ssup2/tap/kpexec
   )
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
