@@ -63,4 +63,4 @@
 [pull]
 	rebase = false
 [gpg]
-	program = /opt/homebrew/bin//gpg
+	program = /opt/homebrew/bin/gpg
