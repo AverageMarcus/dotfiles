@@ -18,6 +18,7 @@ print_usage() {
   echo "-n, --namespace       the namespace the resource is in (default: current namespace)"
 }
 
+YOLO="0"
 POS_ARGS=()
 
 while test $# -gt 0; do
@@ -35,6 +36,10 @@ while test $# -gt 0; do
     -h|--help)
       print_usage
       exit 0
+      ;;
+    --yolo)
+      YOLO="1"
+      shift
       ;;
     /)
       # We want to ignore slash seperators between resource types and names
@@ -68,15 +73,27 @@ if [[ "${SELECTOR}" == "" ]]; then
   RESOURCES=("${POS_ARGS[0]}/${POS_ARGS[1]}")
 else
   printf "Are you sure you want to delete all matching '${SELECTOR}'? (y/n): "
-  SELECTOR="-l ${SELECTOR}"
-  NAMES="$(kubectl api-resources --verbs list -o name 2>/dev/null | tr '\n' ,)"
-  RESOURCES=$(kubectl get "${NAMES::${#NAMES}-1}" --ignore-not-found ${SELECTOR} -n ${NAMESPACE} -o go-template='{{range.items}}{{.kind}}.{{.apiVersion}}/{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null | tr '[:upper:]' '[:lower:]' | sed -r "s|/(v.+)/|/|g")
 fi
-read CONFIRM
+
+if [[ "${YOLO}" == 0 ]]; then
+  read CONFIRM
+else
+  echo ""
+  echo ""
+  orange "YOLO MODE!!! (What could go wrong?!)"
+  CONFIRM="y"
+fi
 
 if [ "${CONFIRM}" = "y" ]; then
   echo ""
   echo "💣  OK, I hope you know what you're doing..."
+
+  if [[ "${SELECTOR}" != "" ]]; then
+    SELECTOR="-l ${SELECTOR}"
+    NAMES="$(kubectl api-resources --verbs list -o name 2>/dev/null | tr '\n' ,)"
+    RESOURCES=$(kubectl get "${NAMES::${#NAMES}-1}" --ignore-not-found ${SELECTOR} -n ${NAMESPACE} -o go-template='{{range.items}}{{.kind}}.{{.apiVersion}}/{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null | tr '[:upper:]' '[:lower:]' | sed -r "s|/(v.+)/|/|g")
+  fi
+
   IFS='
 '
   for RESOURCE in ${RESOURCES}
