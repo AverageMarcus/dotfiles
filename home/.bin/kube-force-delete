@@ -6,6 +6,7 @@ NAMESPACE="$(kubectl config view --minify --output 'jsonpath={..namespace}' &>/d
 set -e
 NAMESPACE=${NAMESPACE:-default}
 SELECTOR=""
+CONTEXT="$(kubectl config current-context)"
 
 print_usage() {
   blue "kube-force-delete - Force delete resources, even those with finalizers"
@@ -15,6 +16,7 @@ print_usage() {
   echo " "
   underline "Options:"
   echo "-h, --help            show this help text"
+  echo "    --context         sets the context from the kubeconfig to use"
   echo "-n, --namespace       the namespace the resource is in (default: current namespace)"
 }
 
@@ -36,6 +38,11 @@ while test $# -gt 0; do
     -h|--help)
       print_usage
       exit 0
+      ;;
+    --context)
+      shift
+      CONTEXT="$1"
+      shift
       ;;
     --yolo)
       YOLO="1"
@@ -60,8 +67,8 @@ fi
 function deleteResource() {
   RES="${1//.v1/}"
   echo "Deleting ${RES}"
-  kubectl patch -p '{"metadata":{"finalizers":null}}' --type=merge -n ${NAMESPACE} ${RES} 1>/dev/null|| printf ""
-  kubectl delete -n ${NAMESPACE} ${RES} 2>/dev/null || printf ""
+  kubectl --context "${CONTEXT}" patch -p '{"metadata":{"finalizers":null}}' --type=merge -n ${NAMESPACE} ${RES} 1>/dev/null|| printf ""
+  kubectl --context "${CONTEXT}" delete -n ${NAMESPACE} ${RES} 2>/dev/null || printf ""
 }
 
 printf "⚠️  This could leave cloud resources undeleted if finalizers aren't honoured ⚠️\n\n"
@@ -90,8 +97,8 @@ if [ "${CONFIRM}" = "y" ]; then
 
   if [[ "${SELECTOR}" != "" ]]; then
     SELECTOR="-l ${SELECTOR}"
-    NAMES="$(kubectl api-resources --verbs list -o name 2>/dev/null | tr '\n' ,)"
-    RESOURCES=$(kubectl get "${NAMES::${#NAMES}-1}" --ignore-not-found ${SELECTOR} -n ${NAMESPACE} -o go-template='{{range.items}}{{.kind}}.{{.apiVersion}}/{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null | tr '[:upper:]' '[:lower:]' | sed -r "s|/(v.+)/|/|g")
+    NAMES="$(kubectl --context "${CONTEXT}" api-resources --verbs list -o name 2>/dev/null | tr '\n' ,)"
+    RESOURCES=$(kubectl --context "${CONTEXT}" get "${NAMES::${#NAMES}-1}" --ignore-not-found ${SELECTOR} -n ${NAMESPACE} -o go-template='{{range.items}}{{.kind}}.{{.apiVersion}}/{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null | tr '[:upper:]' '[:lower:]' | sed -r "s|/(v.+)/|/|g")
   fi
 
   IFS='

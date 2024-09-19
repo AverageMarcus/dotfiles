@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+source .utils
+
+set -e
+NAMESPACE=""
+CONTEXT="$(kubectl config current-context)"
+
+print_usage() {
+  blue "kube-empty-namespace - Force delete all resources in the provided namespace"
+  echo " "
+  underline "Usage:"
+  echo "kube-empty-namespace"
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+  echo "    --context         sets the context from the kubeconfig to use"
+  echo "-n, --namespace       the namespace the resources are in (required)"
+}
+
+YOLO="0"
+POS_ARGS=()
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--namespace)
+      shift
+      NAMESPACE=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    --context)
+      shift
+      CONTEXT="$1"
+      shift
+      ;;
+    --yolo)
+      YOLO="1"
+      shift
+      ;;
+    *)
+      POS_ARGS+=(`echo $1 | tr '/' ' '`)
+      shift
+      ;;
+  esac
+done
+
+if [[ "${NAMESPACE}" == "" ]]; then
+  echo "Please provide the namespace to empty"
+  exit 1
+fi
+
+function deleteResource() {
+  RES="${1//.v1/}"
+  kubectl --context "${CONTEXT}" patch -p '{"metadata":{"finalizers":null}}' --type=merge -n ${NAMESPACE} ${RES} 1>/dev/null || printf ""
+  kubectl --context "${CONTEXT}" delete -n ${NAMESPACE} ${RES} 2>/dev/null || printf ""
+}
+
+printf "⚠️  This could leave cloud resources undeleted if finalizers aren't honoured ⚠️\n\n"
+
+RESOURCES=()
+
+if [[ "${YOLO}" == 0 ]]; then
+  printf "Are you sure you want to force delete all resources in '${NAMESPACE}'? (y/n): "
+  read CONFIRM
+else
+  echo ""
+  echo ""
+  orange "YOLO MODE!!! (What could go wrong?!)"
+  CONFIRM="y"
+fi
+
+if [ "${CONFIRM}" = "y" ]; then
+  echo ""
+  echo "💣  OK, I hope you know what you're doing..."
+  echo "Deleting all resources in namespace '${NAMESPACE}'"
+  echo ""
+
+  NAMES="$(kubectl --context "${CONTEXT}" api-resources --namespaced --verbs list -o name 2>/dev/null | tr '\n' ,)"
+  RESOURCES=$(kubectl --context "${CONTEXT}" get "${NAMES::${#NAMES}-1}" --ignore-not-found -n ${NAMESPACE} -o go-template='{{range.items}}{{.kind}}.{{.apiVersion}}/{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null | tr '[:upper:]' '[:lower:]' | sed -r "s|/(v.+)/|/|g")
+
+  IFS='
+'
+  for RESOURCE in ${RESOURCES}
+  do
+    deleteResource ${RESOURCE}
+  done
+else
+  echo "Aborting..."
+  exit 1
+fi
