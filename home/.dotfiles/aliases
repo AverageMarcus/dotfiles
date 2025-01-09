@@ -73,10 +73,10 @@ git() {
   elif [ "$1" = "commit" ]; then # Sign all commits
     shift
     _git commit -s $@
-  elif [ "$1" = "co" ]; then # Sign all commits
+  elif [ "$1" = "co" ]; then # Create a new branch
     shift
     _git checkout -b $@
-  elif [ "$1" = "push" ]; then # Sign all commits
+  elif [ "$1" = "push" ]; then # Guard against pushing to certain orgs
     shift
     if [ $# -eq 0 ]; then
       remote_url=$(_git remote get-url $(git current-remote))
@@ -86,6 +86,60 @@ git() {
       fi
     fi
     _git push $@
+  elif [ "$1" = "release" ]; then # Create a new tag
+    shift
+    SEMVER=$1
+
+    CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+    VERSION_PARTS=($(echo $CURRENT_TAG | tr "." "\n"))
+    VERSION_MAJOR=${VERSION_PARTS[1]}
+    VERSION_MINOR=${VERSION_PARTS[2]}
+    VERSION_PATCH=${VERSION_PARTS[3]}
+
+    case ${SEMVER} in
+      patch)
+        VERSION_PATCH=$((VERSION_PATCH+1))
+        ;;
+
+      minor)
+        VERSION_MINOR=$((VERSION_MINOR+1))
+        VERSION_PATCH=0
+        ;;
+
+      major)
+        if [[ ${VERSION_MAJOR:0:1} == "v" ]]; then
+          VERSION_MAJOR="v$((VERSION_MAJOR+1))"
+        else
+          VERSION_MAJOR=$((VERSION_MAJOR+1))
+        fi
+        VERSION_MINOR=0
+        VERSION_PATCH=0
+        ;;
+
+      *)
+        echo "Unknown Semver level provided"
+        exit 1
+        ;;
+    esac
+
+    NEW_VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
+    echo ""
+    echo "✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ "
+    echo "Current version  ${CURRENT_TAG}"
+    echo "    New version  ${NEW_VERSION}"
+    echo "✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ "
+    echo ""
+
+    printf "Confirm? (y/n): "
+    read CONFIRM
+
+    if [ "${CONFIRM}" = "y" ]; then
+      git tag -a -m "${NEW_VERSION}" ${NEW_VERSION}
+      echo "New tag created, don't forget to push to remote"
+    else
+      echo "Aborting..."
+      exit 1
+    fi
   else
     _git $@
   fi
