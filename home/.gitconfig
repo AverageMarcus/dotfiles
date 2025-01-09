@@ -22,6 +22,7 @@
 
 [push]
 	default = simple
+	followTags = true
 
 [init]
 	defaultBranch = main
