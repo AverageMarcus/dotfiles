@@ -47,7 +47,7 @@ MAC_BREW_TOOLS=(
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
-KREW_TOOLS=( gs outdated tree stern )
+KREW_TOOLS=( gs outdated tree stern explore blame )
 APT_TOOLS=( zsh gcc )
 
 echo "🔵  Installing / updating tools"
