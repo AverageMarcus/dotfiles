@@ -2,20 +2,11 @@
 
 source .utils
 
-# Force using the `go install` version as we need to pin to 0.19 for now
-alias kind=$GOPATH/bin/kind
-
-kind --version | grep "0.19." > /dev/null
-if [[ "$?" != "0" ]]; then
-  echo "Kind v0.19.0 is required"
-  exit 1
-fi
-
 NAME=""
-VERSION="1.32.1@sha256:c315da1de24c5094dcee18fdc06f43411a03f738dfdea5adc88f05f292794471"
+VERSION="1.32.0@sha256:c48c62eac5da28cdadcf560d1d8616cfa6783b58f0d94cf63ad1bf49600cb027"
 NODES="2"
-FEATURE_GATES=""
-RUNTIME_CONFIG=""
+FEATURE_GATES="MutatingAdmissionPolicy"
+RUNTIME_CONFIG="admissionregistration.k8s.io/v1alpha1"
 AUDIT_POLICY=""
 
 print_usage() {
