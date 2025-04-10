@@ -69,7 +69,14 @@ case ${#POS_ARGS[@]} in
     ;;
   2)
     echo "✨  Opening ${APP} on ${POS_ARGS[1]}"
-    opsctl open ${DEBUG} --app ${APP} --installation ${POS_ARGS[1]}
+
+    TELEPORT_SUPPORTED=$(tsh kube ls -f json --query "name == \"${POS_ARGS[1]}\"" 2>/dev/null | jq '. | length')
+    if [[ "${APP}" == "grafana" ]] && [[ "${TELEPORT_SUPPORTED}" == "1" ]]; then
+      tsh apps login "grafana-${POS_ARGS[1]}"
+      open https://grafana-${POS_ARGS[1]}.teleport.giantswarm.io
+    else
+      opsctl open ${DEBUG} --app ${APP} --installation ${POS_ARGS[1]}
+    fi
     ;;
   3)
     echo "✨  Opening ${APP} on ${POS_ARGS[1]} / ${POS_ARGS[2]}"
