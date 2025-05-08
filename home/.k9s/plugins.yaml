@@ -1,0 +1,216 @@
+plugins:
+  sshnode:
+    shortCut: s
+    description: SSH via Teleport
+    dangerous: false
+    scopes:
+      - nodes
+    background: false
+    command: bash
+    args:
+      - -c
+      - tsh ssh root@cluster=$(echo "$CONTEXT" | rev | cut -d'-' -f1 | rev),node=$(echo "$NAME" | cut -d '.' -f 1)
+
+  aws:
+    shortCut: w
+    description: Open AWS Console
+    dangerous: false
+    scopes:
+    - clusters
+    - awsclusters
+    background: false
+    command: bash
+    args:
+    - -c
+    - open "https://signin.aws.amazon.com/switchrole?account=$(kubectl --context ${CONTEXT} get awsclusterroleidentity $(kubectl --context ${CONTEXT} get awsclusters -n ${NAMESPACE} ${NAME} -o json | jq -r '.spec.identityRef.name') -o json | jq -r '.spec.roleARN | split(":")[4]')&roleName=GiantSwarmAdmin&displayName=${CONTEXT}+-+${NAME}"
+
+  clusterapps:
+    shortCut: a
+    description: List Apps
+    dangerous: false
+    scopes:
+      - clusters
+    background: false
+    command: sh
+    args:
+      - -c
+      - "viddy -n 5s 'kubectl get apps -n $NAMESPACE | grep $NAME'"
+
+  tree:
+    shortCut: t
+    description: Show Tree
+    dangerous: false
+    scopes:
+      - clusters
+    background: false
+    command: sh
+    args:
+      - -c
+      - "viddy -n 15s 'kubectl tree -n $NAMESPACE clusters.v1beta1.cluster.x-k8s.io $NAME'"
+
+  values:
+    shortCut: v
+    description: Show Values
+    dangerous: false
+    scopes:
+      - clusters
+      - apps
+    background: false
+    command: sh
+    args:
+      - -c
+      - "kubectl get -o yaml cm ${NAME}-chart-values -n giantswarm | less"
+
+  # kubectl-blame by knight42
+  # Annotate each line in the given resource's YAML with information from the managedFields to show who last modified the field.
+  # Source: https://github.com/knight42/kubectl-blame
+  # Install via:
+  #   krew: `kubectl krew install blame`
+  #   go: `go install github.com/knight42/kubectl-blame@latest`
+  blame:
+    shortCut: b
+    confirm: false
+    description: "Blame"
+    scopes:
+      - all
+    command: sh
+    background: false
+    args:
+      - -c
+      - "kubectl-blame $RESOURCE_NAME $NAME -n $NAMESPACE --context $CONTEXT | less"
+
+  # Suspends/Resumes a cronjob
+  toggleCronjob:
+    shortCut: Shift-S
+    confirm: true
+    scopes:
+      - cj
+    description: Toggle to suspend or resume a running cronjob
+    command: kubectl
+    background: true
+    args:
+      - patch
+      - cronjobs
+      - $NAME
+      - -n
+      - $NAMESPACE
+      - --context
+      - $CONTEXT
+      - -p
+      - '{"spec" : {"suspend" : $!COL-SUSPEND }}'
+
+  # Flux
+  reconcile-git:
+    shortCut: Shift-R
+    confirm: false
+    description: Flux reconcile
+    scopes:
+      - gitrepositories
+    command: bash
+    background: false
+    args:
+      - -c
+      - >-
+        flux
+        reconcile source git
+        --context $CONTEXT
+        -n $NAMESPACE $NAME
+        | less -K
+  reconcile-hr:
+    shortCut: Shift-R
+    confirm: false
+    description: Flux reconcile
+    scopes:
+      - helmreleases
+    command: bash
+    background: false
+    args:
+      - -c
+      - >-
+        flux
+        reconcile helmrelease
+        --context $CONTEXT
+        -n $NAMESPACE $NAME
+        | less -K
+  reconcile-helm-repo:
+    shortCut: Shift-R
+    description: Flux reconcile
+    scopes:
+      - helmrepositories
+    command: bash
+    background: false
+    confirm: false
+    args:
+      - -c
+      - >-
+        flux
+        reconcile source helm
+        --context $CONTEXT
+        -n $NAMESPACE $NAME
+        | less -K
+  reconcile-oci-repo:
+    shortCut: Shift-R
+    description: Flux reconcile
+    scopes:
+      - ocirepositories
+    command: bash
+    background: false
+    confirm: false
+    args:
+      - -c
+      - >-
+        flux
+        reconcile source oci
+        --context $CONTEXT
+        -n $NAMESPACE $NAME
+        | less -K
+  reconcile-ks:
+    shortCut: Shift-R
+    confirm: false
+    description: Flux reconcile
+    scopes:
+      - kustomizations
+    command: bash
+    background: false
+    args:
+      - -c
+      - >-
+        flux
+        reconcile kustomization
+        --context $CONTEXT
+        -n $NAMESPACE $NAME
+        | less -K
+
+  remove_finalizers:
+    shortCut: Ctrl-F
+    confirm: true
+    scopes:
+      - all
+    description: |
+      Removes all finalizers
+    command: kubectl
+    background: true
+    args:
+      - patch
+      - --context
+      - $CONTEXT
+      - --namespace
+      - $NAMESPACE
+      - $RESOURCE_NAME.$RESOURCE_GROUP
+      - $NAME
+      - -p
+      - '{"metadata":{"finalizers":null}}'
+      - --type
+      - merge
+
+  watch-events:
+    shortCut: Shift-E
+    confirm: false
+    description: Watch Events
+    scopes:
+    - all
+    command: sh
+    background: false
+    args:
+    - -c
+    - "kubectl events --context $CONTEXT --namespace $NAMESPACE --for $RESOURCE_NAME.$RESOURCE_GROUP/$NAME --watch"

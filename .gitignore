@@ -28,3 +28,7 @@
 /home/.kube/*
 !/home/.kube/clusters/.gitkeep
 !/home/.kube/switch-config.yaml
+
+/home/.k9s/benchmarks
+/home/.k9s/clusters
+/home/.k9s/screen-dumps

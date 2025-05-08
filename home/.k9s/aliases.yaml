@@ -1,0 +1,11 @@
+aliases:
+  dp: deployments
+  sec: v1/secrets
+  jo: jobs
+  cr: clusterroles
+  crb: clusterrolebindings
+  ro: roles
+  rb: rolebindings
+  np: networkpolicies
+  cl: cluster.x-k8s.io/v1beta1/clusters
+  app: application.giantswarm.io/v1alpha1/apps
