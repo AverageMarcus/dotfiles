@@ -36,17 +36,24 @@ BREW_TOOLS=(
   pulumi/tap/pulumi kubeseal podman podman-desktop fluxcd/tap/flux ical-buddy
   watch crane openssh siderolabs/talos/talosctl civo/tools/civo raspberry-pi-imager
   gron ssup2/tap/kpexec opentofu visual-studio-code 1password-cli scw smartmontools
-  firefox signal slack ffmpeg openscad tsh colima docker docker-buildx
+  firefox signal slack ffmpeg openscad tsh colima docker docker-buildx nordvpn
   )
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
   pinentry-mac gpg gawk coreutils wget stats homebrew/cask-fonts/font-open-dyslexic-nerd-font
-  hiddenbar dimentium/autoraise/autoraiseapp appcleaner the-unarchiver finicky rar
+  hiddenbar dimentium/autoraise/autoraiseapp appcleaner the-unarchiver finicky rar mas capcut
+  mqtt-explorer raycast bettertouchtool calibre karabiner-elements kdenlive royal-tsx tableplus
+  homebrew/cask/todoist ultimaker-cura webtorrent
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
 KREW_TOOLS=( gs outdated tree stern explore blame access-matrix cert-manager rbac-tool resource-capacity view-secret )
 APT_TOOLS=( zsh gcc )
+MAS_TOOLS=(
+  1263070803 # Lungo
+  1470584107 # Dato
+  1545870783 # System Color Picker
+)
 
 echo "🔵  Installing / updating tools"
 
@@ -123,6 +130,17 @@ case "${OSTYPE}" in
       fi
     done
 
+    # Mac App Store
+    for tool in "${MAS_TOOLS[@]}"
+    do
+      printf "MAS ID: ${tool}..."
+      mas install ${tool} &>/dev/null
+      if [ $? -eq 0 ]; then
+        printf " ✅\n"
+      else
+        printf " ❌\n"
+      fi
+    done
 
     FILES=$(/usr/bin/find ./os-specific/darwin/home -maxdepth 1 -mindepth 1 | tr '\n' ' ')
     for file in $FILES
