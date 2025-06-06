@@ -2,18 +2,17 @@
 
 export PATH="/home/linuxbrew/.linuxbrew/bin:/opt/homebrew/bin/:$PATH"
 
-GITEMAIL=$(git config --get user.email)
-
 [ -d ~/.additional_dotfiles ] || (mkdir -p ~/.additional_dotfiles && touch ~/.additional_dotfiles/credentials)
 [ -d /usr/local/share/zsh/site-functions ] || (sudo mkdir -p /usr/local/share/zsh/site-functions && sudo chmod 777 /usr/local/share/zsh/site-functions)
 
 # Install homebrew
+echo "🔵  Installing homebrew"
 which brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew tap homebrew/core
-
-echo "🔵  Setting up zsh"
+printf " ✅\n"
 
 # Install oh-my-zsh
+echo "🔵  Setting up zsh"
 printf "Cloning oh-my-zsh..."
 [ -d ${HOME}/.oh-my-zsh ] || sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 printf " ✅\n"
@@ -30,24 +29,23 @@ sudo chmod -R 755 /usr/local/share/zsh/site-functions
 # Install tools
 BREW_TOOLS=(
   git argocd bandwhich bat danielfoehrkn/switch/switch derailed/k9s/k9s
-  dive doggo duf dust exa fd fzf git-delta go helm htop jq kind krew
+  dive doggo duf dust exa fd fzf git-delta go helm htop jq kind krew curl
   kubectl kustomize node procs progress ripgrep rs/tap/curlie rust starship
-  tektoncd/tools/tektoncd-cli tldr tailscale yq hashicorp/tap/vault
-  tabby vale lastpass-cli jless macchina tz vmware-tanzu/carvel/kapp viddy
-  homeassistant-cli act dnsmasq gh kubebuilder golangci-lint gnu-sed
-  pulumi/tap/pulumi kubeseal podman podman-desktop fluxcd/tap/flux
-  watch crane openssh siderolabs/talos/talosctl civo/tools/civo
-  pete911/tap/kubectl-iam4sa gron azure-cli ssup2/tap/kpexec
-  opentofu
+  tektoncd/tools/tektoncd-cli tldr tailscale yq tabby vale jless macchina tz viddy
+  homeassistant-cli act dnsmasq gh kubebuilder golangci-lint gnu-sed s3cmd
+  pulumi/tap/pulumi kubeseal podman podman-desktop fluxcd/tap/flux ical-buddy
+  watch crane openssh siderolabs/talos/talosctl civo/tools/civo raspberry-pi-imager
+  gron ssup2/tap/kpexec opentofu visual-studio-code 1password-cli scw smartmontools
+  firefox signal slack ffmpeg openscad tsh colima docker docker-buildx
   )
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
   pinentry-mac gpg gawk coreutils wget stats homebrew/cask-fonts/font-open-dyslexic-nerd-font
-  hiddenbar dimentium/autoraise/autoraiseapp
+  hiddenbar dimentium/autoraise/autoraiseapp appcleaner the-unarchiver finicky rar
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
-KREW_TOOLS=( gs outdated tree stern explore blame )
+KREW_TOOLS=( gs outdated tree stern explore blame access-matrix cert-manager rbac-tool resource-capacity view-secret )
 APT_TOOLS=( zsh gcc )
 
 echo "🔵  Installing / updating tools"

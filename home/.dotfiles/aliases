@@ -2,7 +2,7 @@
 alias _cat=`which cat`
 alias _curl=`which curl`
 alias _ls="/bin/ls"
-alias _grep="/bin/grep"
+alias _grep="/usr/bin/grep"
 alias _diff="/usr/bin/diff"
 alias _du=`which du`
 alias _df=`which df`

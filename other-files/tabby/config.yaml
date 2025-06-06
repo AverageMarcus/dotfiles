@@ -1,4 +1,4 @@
-version: 3
+version: 7
 profiles: []
 hotkeys:
   copy-current-path: []
@@ -129,37 +129,71 @@ hotkeys:
   switch-profile:
     - ⌘-Shift-E
   toggle-window: []
+  scroll-to-bottom: []
+  delete-line:
+    - ⌘-Backspace
+  settings-tab: {}
+  explode-tab:
+    - ⌘-Shift-.
+  combine-tabs:
+    - ⌘-Shift-,
+  pane-nav-1: []
+  pane-nav-2: []
+  pane-nav-3: []
+  pane-nav-4: []
+  pane-nav-5: []
+  pane-nav-6: []
+  pane-nav-7: []
+  pane-nav-8: []
+  pane-nav-9: []
+  pane-increase-vertical: []
+  pane-decrease-vertical: []
+  pane-increase-horizontal: []
+  pane-decrease-horizontal: []
+  focus-all-tabs:
+    - ⌘-⌥-Shift-I
+  scroll-to-top:
+    - Shift-PageUp
+  scroll-up:
+    - ⌥-PageUp
+  scroll-down:
+    - ⌥-PageDown
+  restart-tab: []
+  reconnect-tab: []
+  disconnect-tab: []
+  command-selector:
+    - ⌘-Shift-P
 terminal:
   searchOptions: {}
   colorScheme:
-    name: Desert
-    foreground: '#ffffff'
-    background: '#333333'
-    cursor: '#00ff00'
+    name: hyper-chesterish
+    foreground: '#CDD2E9'
+    background: '#293340'
+    cursor: '#2C85F7'
     colors:
-      - '#4d4d4d'
-      - '#ff2b2b'
-      - '#98fb98'
-      - '#f0e68c'
-      - '#cd853f'
-      - '#ffdead'
-      - '#ffa0a0'
-      - '#f5deb3'
-      - '#555555'
-      - '#ff5555'
-      - '#55ff55'
-      - '#ffff55'
-      - '#87ceff'
-      - '#ff55ff'
-      - '#ffd700'
-      - '#ffffff'
+      - '#293340'
+      - '#E17E85'
+      - '#61BA86'
+      - '#FFEC8E'
+      - '#4CB2FF'
+      - '#BE86E3'
+      - '#2DCED0'
+      - '#CDD2E9'
+      - '#546386'
+      - '#E17E85'
+      - '#61BA86'
+      - '#FFB68E'
+      - '#4CB2FF'
+      - '#BE86E3'
+      - '#2DCED0'
+      - '#CDD2E9'
   font: OpenDyslexicMono Nerd Font
   ligatures: true
   cursor: beam
   pasteOnMiddleClick: false
-  autoOpen: true
   customColorSchemes: []
   background: colorScheme
+  autoOpen: true
 ssh: {}
 configSync:
   parts: {}
@@ -176,3 +210,9 @@ recoverTabs: false
 electronFlags:
   - - force_discrete_gpu
     - '0'
+accessibility: {}
+hacks: {}
+groups: []
+providerBlacklist: []
+commandBlacklist: []
+profileBlacklist: []

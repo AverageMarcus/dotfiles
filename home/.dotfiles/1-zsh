@@ -15,7 +15,6 @@ zstyle ':omz:update' mode reminder
 
 source `brew --prefix switch`/switch.sh
 
-
 # History
 HISTFILE="$HOME/.zsh_history"
 HISTIGNORE="&:exit:reset:clear:zh"
@@ -29,7 +28,6 @@ setopt HIST_REDUCE_BLANKS
 # Options
 setopt autocd
 autoload -U add-zsh-hook
-
 
 DISABLE_AUTO_TITLE="true"
 
@@ -54,4 +52,6 @@ preexec() {
   printf "\033]0;%s\a" "${1%% *} | $cwd" # Omit construct from $1 to show args
 }
 
-eval "$(ssh-agent -s)" > /dev/null
+if [ $(/bin/ps -ef | /usr/bin/grep "ssh-agent" | /usr/bin/grep -v "grep" | wc -l) -eq 0 ]; then
+  eval "$(ssh-agent -s)" > /dev/null
+fi
