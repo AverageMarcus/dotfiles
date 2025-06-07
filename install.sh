@@ -41,9 +41,9 @@ BREW_TOOLS=(
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
   pinentry-mac gpg gawk coreutils wget stats homebrew/cask-fonts/font-open-dyslexic-nerd-font
-  hiddenbar dimentium/autoraise/autoraiseapp appcleaner the-unarchiver finicky rar mas capcut
+  hiddenbar dimentium/autoraise/autoraiseapp the-unarchiver finicky rar mas capcut
   mqtt-explorer raycast bettertouchtool calibre karabiner-elements kdenlive royal-tsx tableplus
-  homebrew/cask/todoist ultimaker-cura webtorrent
+  homebrew/cask/todoist ultimaker-cura webtorrent pika pearcleaner
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
@@ -52,7 +52,6 @@ APT_TOOLS=( zsh gcc )
 MAS_TOOLS=(
   1263070803 # Lungo
   1470584107 # Dato
-  1545870783 # System Color Picker
 )
 
 echo "🔵  Installing / updating tools"
