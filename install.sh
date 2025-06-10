@@ -33,7 +33,7 @@ BREW_TOOLS=(
   kubectl kustomize node procs progress ripgrep rs/tap/curlie rust starship
   tektoncd/tools/tektoncd-cli tldr tailscale yq tabby vale jless macchina tz viddy
   homeassistant-cli act dnsmasq gh kubebuilder golangci-lint gnu-sed s3cmd
-  pulumi/tap/pulumi kubeseal podman podman-desktop fluxcd/tap/flux ical-buddy
+  pulumi/tap/pulumi kubeseal fluxcd/tap/flux ical-buddy baobab
   watch crane openssh siderolabs/talos/talosctl civo/tools/civo raspberry-pi-imager
   gron ssup2/tap/kpexec opentofu visual-studio-code 1password-cli scw smartmontools
   firefox signal slack ffmpeg openscad tsh colima docker docker-buildx nordvpn
@@ -41,7 +41,7 @@ BREW_TOOLS=(
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
   pinentry-mac gpg gawk coreutils wget stats homebrew/cask-fonts/font-open-dyslexic-nerd-font
-  hiddenbar dimentium/autoraise/autoraiseapp the-unarchiver finicky rar mas capcut
+  hiddenbar dimentium/autoraise/autoraiseapp the-unarchiver rar mas capcut
   mqtt-explorer raycast bettertouchtool calibre karabiner-elements kdenlive royal-tsx tableplus
   homebrew/cask/todoist ultimaker-cura webtorrent pika pearcleaner
   )
