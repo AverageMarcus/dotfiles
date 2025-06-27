@@ -20,6 +20,10 @@ if [ $? -eq 0 ]; then
     blue() {
       printf "\e[38;5;75m$@${END_CHARS}"
     }
+
+    green() {
+      printf "\e[34;5;75m$@${END_CHARS}"
+    }
 else
     bold() {
       echo $@
@@ -38,6 +42,10 @@ else
     }
 
     blue() {
+      echo $@
+    }
+
+    green() {
       echo $@
     }
 fi
