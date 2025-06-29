@@ -16,6 +16,7 @@ PATH_DIRS=(
   "${PATH}"
 )
 export PATH=${"${PATH_DIRS[*]}"// /:}
+export FPATH="$FPATH:/opt/homebrew/share/zsh/site-functions"
 
 if [ ! -z ~/.additional_dotfiles/credentials ]; then
   source ~/.additional_dotfiles/credentials
