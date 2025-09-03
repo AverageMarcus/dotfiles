@@ -1,0 +1,53 @@
+#!/usr/bin/env zsh
+
+source .utils
+
+TAG_COUNT=5
+MINOR_VERSION="v1."
+
+print_usage() {
+  orange "kind-list-images - List latest images for use with Kind nodes"
+  echo " "
+  underline "Usage:"
+  echo "kind-list-images [minor-version]"
+  echo " "
+  echo " "
+  underline "Options:"
+  echo "-h, --help            show this help text"
+  echo "-n, --last-n-minors   return the last n minor versions (default: ${TAG_COUNT})"
+}
+
+
+while test $# -gt 0; do
+  case "$1" in
+    -n|--last-n-minors)
+      shift
+      TAG_COUNT=$1
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      MINOR_VERSION=$1
+      shift
+      ;;
+  esac
+done
+
+
+TAGS=( $(crane ls kindest/node | sort | grep 'v1.' | grep -vE 'alpha|beta' | grep ${MINOR_VERSION}) )
+
+declare -A latestMinor
+
+for TAG in "${TAGS[@]}"; do
+  MINOR="${TAG%.*}"
+  latestMinor[$MINOR]=$TAG
+done
+
+RETURN_TAGS=( $(echo $latestMinor | tr ' ' '\n' | sort -r | head -n ${TAG_COUNT}) )
+
+for TAG in "${RETURN_TAGS[@]}"; do
+  echo " - kindest/node:$(blue $TAG)@$(crane digest kindest/node:$TAG)"
+done
