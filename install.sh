@@ -29,7 +29,7 @@ sudo chmod -R 755 /usr/local/share/zsh/site-functions
 # Install tools
 BREW_TOOLS=(
   git argocd bandwhich bat danielfoehrkn/switch/switch derailed/k9s/k9s
-  dive doggo duf dust exa fd fzf git-delta go helm htop jq kind krew curl
+  dive doggo duf dust eza fd fzf git-delta go helm htop jq kind krew curl
   kubectl kustomize node procs progress ripgrep rs/tap/curlie rust starship
   tektoncd/tools/tektoncd-cli tldr tailscale yq tabby vale jless macchina tz viddy
   homeassistant-cli act dnsmasq gh kubebuilder golangci-lint gnu-sed s3cmd
@@ -40,14 +40,14 @@ BREW_TOOLS=(
   )
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
-  pinentry-mac gpg gawk coreutils wget stats homebrew/cask-fonts/font-open-dyslexic-nerd-font
+  pinentry-mac gpg gawk coreutils wget stats font-open-dyslexic-nerd-font
   hiddenbar dimentium/autoraise/autoraiseapp the-unarchiver rar mas capcut
   mqtt-explorer raycast bettertouchtool calibre karabiner-elements kdenlive royal-tsx tableplus
   homebrew/cask/todoist ultimaker-cura webtorrent pika pearcleaner
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
-KREW_TOOLS=( gs outdated tree stern explore blame access-matrix cert-manager rbac-tool resource-capacity view-secret )
+KREW_TOOLS=( outdated tree stern explore blame access-matrix cert-manager rbac-tool resource-capacity view-secret )
 APT_TOOLS=( zsh gcc )
 MAS_TOOLS=(
   1263070803 # Lungo
@@ -63,6 +63,7 @@ if command -v apt &>/dev/null; then
 fi
 
 # Homebrew
+echo "🔵  Homebrew tools"
 export HOMEBREW_NO_INSTALL_CLEANUP=true
 for tool in "${BREW_TOOLS[@]}"
 do
@@ -76,6 +77,7 @@ do
 done
 
 # Cargo
+echo "🔵  Cargo tools"
 for tool in "${CARGO_TOOLS[@]}"
 do
   printf "${tool}..."
@@ -88,6 +90,7 @@ do
 done
 
 # Krew
+echo "🔵  Krew tools"
 kubectl-krew update &>/dev/null
 for tool in "${KREW_TOOLS[@]}"
 do
@@ -162,12 +165,13 @@ case "${OSTYPE}" in
 
 
     # Handle other files outside of the user's home directory
-    echo "Handiling non-standard files:"
+    echo "🔵  Handiling non-standard files:"
     # 1. Tabby config
+    mkdir -p "/Users/${USER}/Library/Application Support/tabby"
     f=$(fulllink "./other-files/tabby/config.yaml")
     dst="/Users/${USER}/Library/Application Support/tabby/config.yaml"
     printf "Linking ${f}=>${dst}"
-    ln -sfn ${f} ${dst}
+    ln -sfn "${f}" "${dst}"
     printf " ✅\n"
 
     # 2. dnsmasq

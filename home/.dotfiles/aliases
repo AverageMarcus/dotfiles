@@ -22,7 +22,7 @@ fi
 # Aliases
 alias cat='bat '
 alias curl='curlie'
-alias ls='exa --group-directories-first --icons --header --git --ignore-glob=.git'
+alias ls='eza --group-directories-first --icons --header --git --ignore-glob=.git'
 alias grep='rg'
 alias diff='delta'
 alias du='dust'
