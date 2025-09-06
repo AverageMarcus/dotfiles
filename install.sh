@@ -37,6 +37,7 @@ BREW_TOOLS=(
   watch crane openssh siderolabs/talos/talosctl civo/tools/civo raspberry-pi-imager
   gron ssup2/tap/kpexec opentofu visual-studio-code 1password-cli scw smartmontools
   firefox signal slack ffmpeg openscad tsh colima docker docker-buildx nordvpn
+  1password
   )
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
