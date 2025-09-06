@@ -43,7 +43,7 @@ BREW_TOOLS=(
 MAC_BREW_TOOLS=(
   pinentry-mac gpg gawk coreutils wget stats font-open-dyslexic-nerd-font
   hiddenbar dimentium/autoraise/autoraiseapp the-unarchiver rar mas capcut
-  mqtt-explorer raycast bettertouchtool calibre karabiner-elements kdenlive royal-tsx tableplus
+  mqtt-explorer raycast bettertouchtool calibre kdenlive royal-tsx tableplus
   homebrew/cask/todoist ultimaker-cura webtorrent pika pearcleaner
   )
 CARGO_TOOLS=( bottom )
