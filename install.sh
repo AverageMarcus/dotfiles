@@ -6,17 +6,17 @@ export PATH="/home/linuxbrew/.linuxbrew/bin:/opt/homebrew/bin/:$PATH"
 [ -d /usr/local/share/zsh/site-functions ] || (sudo mkdir -p /usr/local/share/zsh/site-functions && sudo chmod 777 /usr/local/share/zsh/site-functions)
 
 # Install homebrew
+echo ""
 echo "🔵  Installing homebrew"
 which brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-brew tap homebrew/core
-printf " ✅\n"
+echo "✅"
 
 # Install oh-my-zsh
+echo ""
 echo "🔵  Setting up zsh"
 printf "Cloning oh-my-zsh..."
 [ -d ${HOME}/.oh-my-zsh ] || sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 printf " ✅\n"
-
 # Install ZSH plugins
 printf "Cloning zsh plugins..."
 [ -d ${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions ] || git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
@@ -55,6 +55,13 @@ MAS_TOOLS=(
   1470584107 # Dato
 )
 
+# Tools removed to be cleaned up
+REMOVED_BREW_TOOLS=(
+  exa karabiner-elements kubectx
+)
+REMOVED_KREW_TOOLS=( gs )
+
+echo ""
 echo "🔵  Installing / updating tools"
 
 # Install Debian/Ubuntu specific packages if apt exists
@@ -64,6 +71,7 @@ if command -v apt &>/dev/null; then
 fi
 
 # Homebrew
+echo ""
 echo "🔵  Homebrew tools"
 export HOMEBREW_NO_INSTALL_CLEANUP=true
 for tool in "${BREW_TOOLS[@]}"
@@ -78,6 +86,7 @@ do
 done
 
 # Cargo
+echo ""
 echo "🔵  Cargo tools"
 for tool in "${CARGO_TOOLS[@]}"
 do
@@ -91,6 +100,7 @@ do
 done
 
 # Krew
+echo ""
 echo "🔵  Krew tools"
 kubectl-krew update &>/dev/null
 for tool in "${KREW_TOOLS[@]}"
@@ -113,6 +123,7 @@ fulllink() {
   fi
 }
 
+echo ""
 echo "🔵  OS Specific setup"
 echo "Detected OS type: ${OSTYPE}"
 
@@ -122,6 +133,8 @@ case "${OSTYPE}" in
     ;;
   *darwin*)
     # Mac specific setup
+    echo ""
+    echo "Instaling Mac-specific Brew tools..."
     for tool in "${MAC_BREW_TOOLS[@]}"
     do
       printf "${tool}..."
@@ -134,6 +147,8 @@ case "${OSTYPE}" in
     done
 
     # Mac App Store
+    echo ""
+    echo "Instaling Mac-specific App Store tools..."
     for tool in "${MAS_TOOLS[@]}"
     do
       printf "MAS ID: ${tool}..."
@@ -145,6 +160,8 @@ case "${OSTYPE}" in
       fi
     done
 
+    echo ""
+    echo "Setting up config files"
     FILES=$(/usr/bin/find ./os-specific/darwin/home -maxdepth 1 -mindepth 1 | tr '\n' ' ')
     for file in $FILES
     do
@@ -166,6 +183,7 @@ case "${OSTYPE}" in
 
 
     # Handle other files outside of the user's home directory
+    echo ""
     echo "🔵  Handiling non-standard files:"
     # 1. Tabby config
     mkdir -p "/Users/${USER}/Library/Application Support/tabby"
@@ -188,6 +206,7 @@ case "${OSTYPE}" in
     ;;
 esac
 
+echo ""
 echo "🔵  Adding configuration"
 FILES=$(/usr/bin/find ./home -maxdepth 1 -mindepth 1 | tr '\n' ' ')
 for file in $FILES
@@ -197,4 +216,37 @@ do
   printf "Linking ${f} => ${dst}"
   ln -sfn ${f} ${dst}
   printf " ✅\n"
+done
+
+
+echo ""
+echo "🔵  Updating installed tools..."
+brew upgrade
+mas upgrade
+
+echo ""
+echo "🔵  Removing old Homebrew tools"
+export HOMEBREW_NO_INSTALL_CLEANUP=true
+for tool in "${REMOVED_BREW_TOOLS[@]}"
+do
+  printf "${tool}..."
+  brew uninstall ${tool} &>/dev/null
+  if [ $? -eq 0 ]; then
+    printf " ✅\n"
+  else
+    printf " ❌\n"
+  fi
+done
+
+echo ""
+echo "🔵  Removing old Krew tools"
+for tool in "${REMOVED_KREW_TOOLS[@]}"
+do
+  printf "${tool}..."
+  kubectl-krew uninstall ${tool} &>/dev/null
+  if [ $? -eq 0 ]; then
+    printf " ✅\n"
+  else
+    printf " ❌\n"
+  fi
 done
