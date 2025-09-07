@@ -36,33 +36,27 @@ done
 
 NAME=${2}
 
-addLabelsAndAnnotations() {
-  yq e '.metadata.labels."app.kubernetes.io/name" = "'${NAME}'" |
-            .metadata.labels."giantswarm.io/user" = "'$(whoami)'" |
-            .metadata.annotations."giantswarm.io/description" = ""' -
-}
-
 case "$1" in
   deployment|dp)
-    kubectl create ${NAMESPACE} deployment ${NAME} --image=nginx:1.21 --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    kubectl create ${NAMESPACE} deployment ${NAME} --image=nginx:1.21 --dry-run=client -o yaml ${@:3}
     ;;
   ingress|in)
-    kubectl create ${NAMESPACE} ingress ${NAME} --dry-run=client -o yaml --rule=example.com/=my-service:web ${@:3} | addLabelsAndAnnotations
+    kubectl create ${NAMESPACE} ingress ${NAME} --dry-run=client -o yaml --rule=example.com/=my-service:web ${@:3}
     ;;
   service|svc)
-    kubectl create ${NAMESPACE} service clusterip ${NAME} --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    kubectl create ${NAMESPACE} service clusterip ${NAME} --dry-run=client -o yaml ${@:3}
     ;;
   configmap|cm)
-    kubectl create ${NAMESPACE} configmap ${NAME} --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    kubectl create ${NAMESPACE} configmap ${NAME} --dry-run=client -o yaml ${@:3}
     ;;
   secret|sec)
-    kubectl create ${NAMESPACE} secret generic ${NAME} --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    kubectl create ${NAMESPACE} secret generic ${NAME} --dry-run=client -o yaml ${@:3}
     ;;
   cronjob|cj)
-    kubectl create ${NAMESPACE} cronjob ${NAME} --image=alpine:latest --schedule="1 * * * *" --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    kubectl create ${NAMESPACE} cronjob ${NAME} --image=alpine:latest --schedule="1 * * * *" --dry-run=client -o yaml ${@:3}
     ;;
   job|jo)
-    kubectl create ${NAMESPACE} job ${NAME} --image=alpine:latest --dry-run=client -o yaml ${@:3} | addLabelsAndAnnotations
+    kubectl create ${NAMESPACE} job ${NAME} --image=alpine:latest --dry-run=client -o yaml ${@:3}
     ;;
 esac
 
