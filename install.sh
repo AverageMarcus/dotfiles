@@ -42,9 +42,10 @@ BREW_TOOLS=(
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
   pinentry-mac gpg gawk coreutils wget stats font-open-dyslexic-nerd-font
-  hiddenbar dimentium/autoraise/autoraiseapp the-unarchiver rar mas capcut
+  dimentium/autoraise/autoraiseapp the-unarchiver rar mas capcut
   mqtt-explorer raycast bettertouchtool calibre kdenlive royal-tsx tableplus
   homebrew/cask/todoist ultimaker-cura webtorrent pika pearcleaner spotmenu
+  jordanbaird-ice
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
@@ -58,7 +59,7 @@ MAS_TOOLS=(
 
 # Tools removed to be cleaned up
 REMOVED_BREW_TOOLS=(
-  exa karabiner-elements kubectx
+  exa karabiner-elements kubectx hiddenbar
 )
 REMOVED_KREW_TOOLS=( gs )
 
