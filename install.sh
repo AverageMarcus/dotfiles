@@ -53,6 +53,7 @@ APT_TOOLS=( zsh gcc )
 MAS_TOOLS=(
   1263070803 # Lungo
   1470584107 # Dato
+  1351639930 # Gifski
 )
 
 # Tools removed to be cleaned up
