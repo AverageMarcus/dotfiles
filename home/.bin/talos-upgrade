@@ -9,17 +9,31 @@ if [[ "${TALOSCONFIG}" == "" ]]; then
   exit 1
 fi
 
+if [[ "$(kubectl config current-context)" != "admin@talos-cluster" ]]; then
+  echo "You need to have your kubectx set to the Talos cluster"
+  exit 1
+fi
+
+echo ""
+blue "Ensuring talosctl is up-to-date..."
+brew upgrade talosctl &>/dev/null
+
 LATEST_RELEASE=$(curl --silent https://api.github.com/repos/siderolabs/talos/releases | jq -r '[.[] | select(.prerelease == false)] | .[0]')
 TALOS_VERSION="$(jq --argjson LATEST_RELEASE "$LATEST_RELEASE" -c -n -r '$LATEST_RELEASE.tag_name')"
 KUBERNETES_VERSION="$(jq --argjson LATEST_RELEASE "$LATEST_RELEASE" -c -n -r '$LATEST_RELEASE.body | match("registry.k8s.io/kube-apiserver:v([0-9\\.]+)") | .captures[0].string')"
 
-blue "TALOS_VERSION      = ${TALOS_VERSION}"
-blue "KUBERNETES_VERSION = ${KUBERNETES_VERSION}"
-echo ""
-blue "ISO URL: https://github.com/siderolabs/talos/releases/download/${TALOS_VERSION}/metal-amd64.iso"
-echo ""
+CONTROL_PLANE="$(talosctl get nodetaintspec -o json | jq -r '.node')"
+WORKERS=( $(talosctl get nodeips -o json | jq -r '.node | select(. != "'${CONTROL_PLANE}'")'))
 
-kubectl cluster-info
+CURRENT_KUBERNETES_VERSION=$(kubectl version -o json | jq -r '.serverVersion.gitVersion')
+CURRENT_TALOS_VERSION=$(talosctl version -n ${CONTROL_PLANE} --short | grep Tag: | cut -f3 -w)
+
+echo ""
+orange "Latest versions:"
+blue "TALOS_VERSION      = ${TALOS_VERSION} (current ${CURRENT_TALOS_VERSION})"
+blue "KUBERNETES_VERSION = ${KUBERNETES_VERSION} (current ${CURRENT_KUBERNETES_VERSION})"
+blue "ISO URL            = https://github.com/siderolabs/talos/releases/download/${TALOS_VERSION}/metal-amd64.iso"
+echo ""
 
 echo ""
 printf "Continue? (y/n): "
@@ -27,13 +41,6 @@ read CONFIRM
 if [[ "${CONFIRM}" != "y" ]]; then
   exit 1
 fi
-
-echo ""
-blue "Ensuring talosctl is up-to-date..."
-brew upgrade siderolabs/tap/talosctl
-
-CONTROL_PLANE="$(talosctl get nodetaintspec -o json | jq -r '.node')"
-WORKERS=( $(talosctl get nodeips -o json | jq -r '.node | select(. != "'${CONTROL_PLANE}'")'))
 
 echo ""
 kubectl get no -o wide
