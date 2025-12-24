@@ -16,6 +16,7 @@ fi
 
 echo ""
 blue "Ensuring talosctl is up-to-date..."
+brew update &>/dev/null
 brew upgrade talosctl &>/dev/null
 
 LATEST_RELEASE=$(curl --silent https://api.github.com/repos/siderolabs/talos/releases | jq -r '[.[] | select(.prerelease == false)] | .[0]')
