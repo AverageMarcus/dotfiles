@@ -1,0 +1,52 @@
+#!/usr/bin/env zsh
+
+source .utils
+
+print_usage() {
+  blue "wattage - Show battery / charging status"
+  echo " "
+  underline "Usage:"
+  echo "wattage"
+}
+
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+  esac
+done
+
+
+info=$(ioreg -w 0 -f -r -c AppleSmartBattery)
+vol=$(echo $info | /usr/bin/grep '"Voltage" = ' | /usr/bin/grep -oE '[0-9]+')
+amp=$(echo $info | /usr/bin/grep '"Amperage" = ' | /usr/bin/grep -oE '[0-9]+')
+amp=$(bc <<< "if ($amp >= 2^63) $amp - 2^64 else $amp")
+wat="$(( (vol / 1000.0) * (amp / 1000.0) ))"
+
+power_details=$(/usr/sbin/system_profiler SPPowerDataType -json | jq -c)
+
+cable_connected=$(echo $power_details | jq -r '.SPPowerDataType[] | select(.sppower_battery_charger_connected) | .sppower_battery_charger_connected')
+cable_wat=$(echo $power_details | jq -r '.SPPowerDataType[] | select(.sppower_ac_charger_watts) | .sppower_ac_charger_watts')
+
+
+battery_current=$(echo $power_details | jq -r '.SPPowerDataType[] | select(.sppower_battery_charge_info) | .sppower_battery_charge_info.sppower_battery_state_of_charge')
+battery_max=$(echo $power_details | jq -r '.SPPowerDataType[] | select(.sppower_battery_health_info) | .sppower_battery_health_info.sppower_battery_health_maximum_capacity')
+
+printf "🔋 %.0f%% (max %s)\n" $battery_current $battery_max
+
+if [[ "$cable_connected" == "FALSE" ]]; then
+  echo "🔌 No charger connected"
+else
+  printf "🔌 Cable watts: %.0f W\n" $cable_wat
+  if [[ "$wat" -gt "0" ]]
+  then
+    printf "⚡️ Charging at: %.0f W\n" $wat
+  fi
+fi
+
+if [[ "$wat" -lt "0" ]]
+then
+  printf "🪫  Discharging at: %.0f W\n" $wat
+fi
