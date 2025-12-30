@@ -45,7 +45,7 @@ MAC_BREW_TOOLS=(
   dimentium/autoraise/autoraiseapp the-unarchiver rar mas capcut
   mqtt-explorer raycast bettertouchtool calibre kdenlive royal-tsx tableplus
   homebrew/cask/todoist ultimaker-cura webtorrent pika pearcleaner spotmenu
-  jordanbaird-ice utm
+  jordanbaird-ice utm TheBoredTeam/boring-notch/boring-notch
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
