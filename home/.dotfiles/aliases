@@ -145,3 +145,4 @@ git() {
   fi
 }
 
+alias hermes='docker run --rm -it -v ~/.hermes:/opt/data nousresearch/hermes-agent'
