@@ -46,7 +46,7 @@ MAC_BREW_TOOLS=(
   mqtt-explorer raycast bettertouchtool calibre kdenlive royal-tsx tableplus
   homebrew/cask/todoist ultimaker-cura webtorrent pika pearcleaner spotmenu
   jordanbaird-ice utm TheBoredTeam/boring-notch/boring-notch
-  container socktainer
+  container
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
@@ -212,9 +212,6 @@ case "${OSTYPE}" in
     dst="/Users/${USER}/.config/container/config.toml"
     printf "Copying ${f}=>${dst}"
     cp ${f} ${dst}
-    printf " ✅\n"
-    printf "Starting socktainer service"
-    brew services restart socktainer 1>/dev/null
     printf " ✅\n"
 
     ;;

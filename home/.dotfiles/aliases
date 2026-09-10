@@ -145,7 +145,7 @@ git() {
   fi
 }
 
-
+alias _docker=/opt/homebrew/bin/docker
 docker() {
   if [ "$1" = "run" ]; then # Git clone then cd into new directory
     shift
