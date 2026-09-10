@@ -36,7 +36,7 @@ BREW_TOOLS=(
   pulumi/tap/pulumi kubeseal fluxcd/tap/flux ical-buddy baobab
   watch crane openssh siderolabs/talos/talosctl civo/tools/civo raspberry-pi-imager
   gron ssup2/tap/kpexec opentofu visual-studio-code 1password-cli scw smartmontools
-  firefox signal slack ffmpeg openscad tsh colima docker docker-buildx nordvpn
+  firefox signal slack ffmpeg openscad tsh docker docker-buildx nordvpn
   1password tailscale-app witr nklmilojevic/sofka/sofka
   )
 # Brew tools only available / needed on Mac
@@ -46,6 +46,7 @@ MAC_BREW_TOOLS=(
   mqtt-explorer raycast bettertouchtool calibre kdenlive royal-tsx tableplus
   homebrew/cask/todoist ultimaker-cura webtorrent pika pearcleaner spotmenu
   jordanbaird-ice utm TheBoredTeam/boring-notch/boring-notch
+  container socktainer
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
@@ -203,6 +204,17 @@ case "${OSTYPE}" in
     printf " ✅\n"
     printf "Setting DNS server for 'Wi-Fi' interface to use dnsmasq"
     sudo networksetup -setdnsservers "Wi-Fi" 127.0.0.1
+    printf " ✅\n"
+
+    # 3, Apple Container config & socktainer service
+    mkdir -p "/Users/${USER}/.config/container"
+    f=$(fulllink "./other-files/container/config.toml")
+    dst="/Users/${USER}/.config/container/config.toml"
+    printf "Copying ${f}=>${dst}"
+    cp ${f} ${dst}
+    printf " ✅\n"
+    printf "Starting socktainer service"
+    brew services restart socktainer 1>/dev/null
     printf " ✅\n"
 
     ;;

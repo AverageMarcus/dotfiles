@@ -1,0 +1,4 @@
+# Not currently used
+# Requires: https://github.com/apple/container/pull/1614
+[dns]
+nameservers = ["1.1.1.1"]

@@ -145,4 +145,16 @@ git() {
   fi
 }
 
-alias hermes='docker run --rm -it -v ~/.hermes:/opt/data nousresearch/hermes-agent'
+
+docker() {
+  if [ "$1" = "run" ]; then # Git clone then cd into new directory
+    shift
+    container run --dns 192.168.1.3 $@
+  elif [ "$1" = "build" ]; then # Sign all commits
+    shift
+    container build --dns 192.168.1.3 $@
+  else
+    container $@
+  fi
+}
+
