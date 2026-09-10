@@ -46,7 +46,7 @@ MAC_BREW_TOOLS=(
   mqtt-explorer raycast bettertouchtool calibre kdenlive royal-tsx tableplus
   homebrew/cask/todoist ultimaker-cura webtorrent pika pearcleaner spotmenu
   jordanbaird-ice utm TheBoredTeam/boring-notch/boring-notch
-  container
+  container orchard
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
