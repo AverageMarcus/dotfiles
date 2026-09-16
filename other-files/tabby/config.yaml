@@ -1,4 +1,4 @@
-version: 7
+version: 8
 profiles: []
 hotkeys:
   copy-current-path: []
@@ -163,6 +163,29 @@ hotkeys:
   disconnect-tab: []
   command-selector:
     - ⌘-Shift-P
+  debug-save-state:
+    - Ctrl-Shift-Alt-1
+  debug-load-state:
+    - Ctrl-Shift-Alt-2
+  debug-copy-state:
+    - Ctrl-Shift-Alt-3
+  debug-paste-state:
+    - Ctrl-Shift-Alt-4
+  debug-save-output:
+    - Ctrl-Shift-Alt-5
+  debug-load-output:
+    - Ctrl-Shift-Alt-6
+  debug-copy-output:
+    - Ctrl-Shift-Alt-7
+  debug-paste-output:
+    - Ctrl-Shift-Alt-8
+  scroll-page-up:
+    - ⌥-PageUp
+  scroll-page-down:
+    - ⌥-PageDown
+  open-sftp: []
+  group-selectors: {}
+  pin-tab: []
 terminal:
   searchOptions: {}
   colorScheme:
@@ -194,6 +217,7 @@ terminal:
   customColorSchemes: []
   background: colorScheme
   autoOpen: true
+  profile: local:binzsh
 ssh: {}
 configSync:
   parts: {}

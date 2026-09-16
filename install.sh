@@ -31,7 +31,7 @@ BREW_TOOLS=(
   git argocd bandwhich bat danielfoehrkn/switch/switch derailed/k9s/k9s
   dive doggo duf dust eza fd fzf git-delta go helm htop jq kind krew curl
   kubectl kustomize node procs progress ripgrep rs/tap/curlie rust starship
-  tektoncd/tools/tektoncd-cli tldr tailscale yq tabby vale jless macchina tz viddy
+  tektoncd/tools/tektoncd-cli tldr tailscale yq tabby vale jless macchina tz
   homeassistant-cli act dnsmasq gh kubebuilder golangci-lint gnu-sed s3cmd
   pulumi/tap/pulumi kubeseal fluxcd/tap/flux ical-buddy baobab
   watch crane openssh siderolabs/talos/talosctl civo/tools/civo raspberry-pi-imager
@@ -42,11 +42,10 @@ BREW_TOOLS=(
 # Brew tools only available / needed on Mac
 MAC_BREW_TOOLS=(
   pinentry-mac gpg gawk coreutils wget stats font-open-dyslexic-nerd-font
-  dimentium/autoraise/autoraiseapp the-unarchiver rar mas capcut
+  dimentium/autoraise/autoraiseapp the-unarchiver rar mas
   mqtt-explorer raycast bettertouchtool calibre kdenlive royal-tsx tableplus
-  homebrew/cask/todoist ultimaker-cura webtorrent pika pearcleaner spotmenu
-  jordanbaird-ice utm TheBoredTeam/boring-notch/boring-notch
-  container orchard
+  homebrew/cask/todoist ultimaker-cura webtorrent pika pearcleaner
+  utm TheBoredTeam/boring-notch/boring-notch container orchard fif7y/tap/pelmet
   )
 CARGO_TOOLS=( bottom )
 NODE_TOOLS=( git-split-diffs )
