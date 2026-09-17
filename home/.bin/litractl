@@ -32,9 +32,11 @@ done
 
 if [[ "${POS_ARGS[0]}" == "on" ]]; then
   italic "Turning Litra Glow on... "
+  osascript -e 'display notification "Turning Litra Glow on... " with title "Litra Glow"'
   hidapitester --vidpid 046D/C900 --open --length 20 --send-output 0x11,0xff,0x04,0x1c,0x01 &>/dev/null
 elif [[ "${POS_ARGS[0]}" == "off" ]]; then
   italic "Turning Litra Glow off... "
+  osascript -e 'display notification "Turning Litra Glow off... " with title "Litra Glow"'
   hidapitester --vidpid 046D/C900 --open --length 20 --send-output 0x11,0xff,0x04,0x1c &>/dev/null
 else
   print_usage

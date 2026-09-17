@@ -1,0 +1,12 @@
+#!/usr/bin/osascript
+
+tell application "BetterTouchTool"
+	trigger_action "{ BTTPredefinedActionType: 122}" -- Toggle Notification Center (Open)
+	trigger_action "{ BTTPredefinedActionType: 289}" -- Clear notifications
+end tell
+
+delay 1
+
+tell application "BetterTouchTool"
+	trigger_action "{ BTTPredefinedActionType: 122}" -- Toggle Notification Center (Close)
+end tell

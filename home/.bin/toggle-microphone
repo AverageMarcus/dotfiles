@@ -1,0 +1,21 @@
+#!/usr/bin/osascript
+
+on getMicrophoneVolume()
+	input volume of (get volume settings)
+end getMicrophoneVolume
+on disableMicrophone()
+	set volume input volume 0
+	log "Microphone turned off 🔴"
+  display notification "Microphone turned off 🔴" with title "🎙️ Microphone"
+end disableMicrophone
+on enableMicrophone()
+	set volume input volume 100
+	log "Microphone turned on 🟢"
+  display notification "Microphone turned on 🟢" with title "🎙️ Microphone"
+end enableMicrophone
+
+if getMicrophoneVolume() is greater than 0 then
+	disableMicrophone()
+else
+	enableMicrophone()
+end if
